@@ -49,7 +49,29 @@ const counts = Object.fromEntries(
 </BaseLayout>
 
 <script>
-  // YOUR TURN: make the filter buttons work. See the brief in chat.
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const books = document.querySelectorAll<HTMLLIElement>('.book-list > li');
+  const emptyMessage = document.querySelector<HTMLParagraphElement>('.empty');
+
+  function applyFilter(filter: string) {
+    let visibleCount = 0;
+
+    for (const book of books) {
+      const matches = filter === 'all' || book.dataset.status === filter;
+      book.hidden = !matches;
+      if (matches) visibleCount++;
+    }
+
+    for (const button of buttons) {
+      button.setAttribute('aria-pressed', String(button.dataset.filter === filter));
+    }
+
+    if (emptyMessage) emptyMessage.hidden = visibleCount > 0;
+  }
+
+  for (const button of buttons) {
+    button.addEventListener('click', () => applyFilter(button.dataset.filter ?? 'all'));
+  }
 </script>
 
 <style>

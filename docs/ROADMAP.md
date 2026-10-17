@@ -8,20 +8,17 @@ Committed work is above the line, speculative ideas below it. Move items between
 - **2026-10-17**: Book data model: content collection over `books.json` with a Zod schema. Build fails on invalid values, unknown fields and duplicate ids (verified by deliberately breaking the data).
 - **2026-10-17**: Base layout, navigation, homepage, `/books` library page (sorted by status, status counts, half-star ratings, responsive, dark mode). Base-path-aware links via `url()`.
 - **2026-10-17**: Project documentation: README, AGENTS.md, mission, architecture, roadmap, ADRs, learning log.
+- **2026-10-17**: Library status filter (vanilla TypeScript, progressive enhancement), implemented by Patrick.
 
 ## In progress
 
-- **Library status filter.** *Patrick is implementing this himself.* The empty `<script>` at the bottom of `src/pages/books.astro` is the task. Spec:
-  - Buttons have `data-filter="all|reading|read|want-to-read"` and `aria-pressed`; each `<li>` has `data-status`.
-  - Clicking shows only matching books (or all), sets `aria-pressed` on the active button, and shows the `.empty` message when nothing matches.
-  - Use `li.hidden`, not inline styles. Optional stretch: sync the filter to `?status=` in the URL.
-  - When it's done, an assistant should **review** it rather than rewrite it.
+- **Deploy to GitHub Pages** (see Next, item 1).
 
 ## Next (Phase 1, committed)
 
 1. **Deploy to GitHub Pages.** Add `.github/workflows/deploy.yml`, set Pages source to GitHub Actions, verify the live URL. The personal `gh` token needs the `workflow` scope first: `gh auth refresh -h github.com -u patrickebyrne11 -s workflow`.
 2. **Replace example books with the real library.** Remove the "Example data" notice in `books.astro` at the same time.
-3. **Search** by title/author on the library page (client-side, same pattern as the filter).
+3. **Search** by title/author on the library page (client-side, same pattern as the filter). Optional: sync filter/search to the URL (`?status=read`) so views are shareable.
 4. **Type checking in CI.** Consider `astro check` (adds `@astrojs/check` + `typescript` as dev dependencies), since `astro build` doesn't type-check.
 5. Close the known data gaps (entry missing `id`, same book under two ids). For example, a small validation script run in CI.
 

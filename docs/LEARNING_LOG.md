@@ -26,7 +26,7 @@ Template:
 - Scaffolded Astro's `minimal` template (one runtime dependency).
 - A schema for `books.json` (`src/content.config.ts`), then deliberately broke the data three ways to confirm the build fails on each.
 - Base layout, homepage, library page, book card with half-star ratings, dark mode.
-- *(In progress)* The client-side status filter, written by Patrick.
+- The client-side status filter, written by Patrick: DOM queries (`querySelectorAll`), `data-*` attributes as the bridge between build-time HTML and browser code, `hidden`, `aria-pressed`, and click event listeners (event-driven code in the browser).
 
 **What I learned:**
 - **Build time vs runtime.** `.astro` frontmatter runs once in Node during the build; the output is static HTML. Like a dbt model: transform at build, serve the materialised result. `<script>` tags are the only code that runs in the browser.

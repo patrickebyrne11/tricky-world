@@ -21,7 +21,7 @@ The long-term purpose is in [docs/MISSION.md](docs/MISSION.md).
 ## Current features
 
 - **Homepage** (`/`): introduction and navigation.
-- **Library** (`/books`): personal reading list with reading status, half-star ratings, genres, optional reviews and completion dates. Book data is checked against a schema at build time. Status filtering is in progress.
+- **Library** (`/books`): personal reading list with reading status, half-star ratings, genres, optional reviews and completion dates. Book data is checked against a schema at build time, and books can be filtered by status.
 
 ## Technology stack
 
