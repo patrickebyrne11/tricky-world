@@ -1,43 +1,68 @@
-# Astro Starter Kit: Minimal
+# Tricky World
+
+> A little corner of the internet for books, projects and experiments.
+
+Tricky World is the personal website of Patrick Byrne ("Tricky"). It's also his engineering playground: a place to turn ideas into working software, try out technologies, and build the skills to take an idea all the way to production.
+
+> Start simple. Build something useful. Understand it. Improve it. Repeat.
+
+The long-term purpose is in [docs/MISSION.md](docs/MISSION.md).
+
+## Status
+
+**Phase 1: Personal website, in progress.** See [docs/ROADMAP.md](docs/ROADMAP.md) for exactly where things stand.
+
+| | |
+|---|---|
+| Repository | https://github.com/patrickebyrne11/tricky-world |
+| Live site | https://patrickebyrne11.github.io/tricky-world/ (once deployment is set up) |
+| Local dev | http://localhost:4321/tricky-world/ |
+
+## Current features
+
+- **Homepage** (`/`): introduction and navigation.
+- **Library** (`/books`): personal reading list with reading status, half-star ratings, genres, optional reviews and completion dates. Book data is checked against a schema at build time. Status filtering is in progress.
+
+## Technology stack
+
+| Concern | Choice |
+|---|---|
+| Framework | [Astro](https://astro.build) 7 (static site generation) |
+| Language | TypeScript (strict) |
+| Styling | Plain CSS (global stylesheet + component-scoped `<style>`) |
+| Content | Astro content collection over a JSON file, validated with Zod 4 |
+| Hosting | GitHub Pages (project site under `/tricky-world/`) |
+| CI/CD | GitHub Actions (planned) |
+| Backend / database / auth | None, on purpose (see [docs/DECISIONS.md](docs/DECISIONS.md)) |
+
+## Local development
+
+Prerequisites: Node.js ≥ 22.22 (developed on Node 24), npm, Git.
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev        # http://localhost:4321/tricky-world/
+npm run build      # production build to ./dist (also validates book data)
+npm run preview    # serve ./dist locally
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+All URLs include the `/tricky-world/` base path, even locally. `http://localhost:4321/` on its own will 404.
 
-## 🚀 Project Structure
+## Updating the library
 
-Inside of your Astro project, you'll see the following folders and files:
+Books live in [src/data/books.json](src/data/books.json). The rules each entry must follow are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#book-data). After editing, run `npm run build`: if the data breaks the rules (bad status, rating out of range, misspelt field, duplicate book), the build fails and tells you which entry and field.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Deployment
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Planned: every push to `main` triggers a GitHub Actions workflow that builds the site and publishes `dist/` to GitHub Pages. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment).
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Documentation
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+| Doc | Purpose |
+|---|---|
+| [AGENTS.md](AGENTS.md) | Instructions for AI coding assistants working in this repo |
+| [docs/MISSION.md](docs/MISSION.md) | Why Tricky World exists and how it should grow |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How it works now: structure, data, hosting, deployment |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Done, in progress, next, and speculative ideas |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | Architecture Decision Records |
+| [docs/LEARNING_LOG.md](docs/LEARNING_LOG.md) | What's been learned at each milestone |
