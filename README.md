@@ -15,7 +15,7 @@ The long-term purpose is in [docs/MISSION.md](docs/MISSION.md).
 | | |
 |---|---|
 | Repository | https://github.com/patrickebyrne11/tricky-world |
-| Live site | https://patrickebyrne11.github.io/tricky-world/ (once deployment is set up) |
+| Live site | https://patrickebyrne11.github.io/tricky-world/ |
 | Local dev | http://localhost:4321/tricky-world/ |
 
 ## Current features
@@ -32,7 +32,7 @@ The long-term purpose is in [docs/MISSION.md](docs/MISSION.md).
 | Styling | Plain CSS (global stylesheet + component-scoped `<style>`) |
 | Content | Astro content collection over a JSON file, validated with Zod 4 |
 | Hosting | GitHub Pages (project site under `/tricky-world/`) |
-| CI/CD | GitHub Actions (planned) |
+| CI/CD | GitHub Actions (build + deploy on push to `main`) |
 | Backend / database / auth | None, on purpose (see [docs/DECISIONS.md](docs/DECISIONS.md)) |
 
 ## Local development
@@ -54,7 +54,7 @@ Books live in [src/data/books.json](src/data/books.json). The rules each entry m
 
 ## Deployment
 
-Planned: every push to `main` triggers a GitHub Actions workflow that builds the site and publishes `dist/` to GitHub Pages. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment).
+Every push to `main` runs [.github/workflows/deploy.yml](.github/workflows/deploy.yml): GitHub Actions builds the site (which also validates the book data) and publishes `dist/` to GitHub Pages. If the build fails, the previous version stays live. Watch runs in the repo's **Actions** tab. Details in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment).
 
 ## Documentation
 

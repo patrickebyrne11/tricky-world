@@ -109,14 +109,16 @@ GitHub Pages, public repo `patrickebyrne11/tricky-world`. Free, HTTPS by default
 
 ## Deployment
 
-**Status: not yet configured.** Plan:
+**Status: live** since 2026-10-17.
 
-- Workflow `.github/workflows/deploy.yml`, triggered on push to `main` (and manually).
-- Job 1 builds with `withastro/action` (`npm ci` + `astro build`) and uploads `dist/` as a Pages artifact.
-- Job 2 runs `actions/deploy-pages`.
-- Repo setting: Pages → Source = **GitHub Actions**.
+- Workflow [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml), triggered on push to `main` and manually (`workflow_dispatch`).
+- `build` job: `actions/checkout@v7`, then `withastro/action@v6` (`npm ci` + `npm run build`, uploads `dist/` as a Pages artifact).
+- `deploy` job (`needs: build`): `actions/deploy-pages@v5` into the `github-pages` environment.
+- Least-privilege token permissions: `contents: read`, `pages: write`, `id-token: write` (OIDC, so no long-lived deploy credentials).
+- `concurrency: pages` with `cancel-in-progress: false`: deploys queue rather than race.
+- Repo setting: Pages build type = **workflow** (GitHub Actions).
 
-Because the build validates book data, a bad data edit fails CI and never reaches the live site.
+Because the build validates book data, a bad data edit fails CI and never reaches the live site. Cost: free (public repo).
 
 ## External dependencies
 
@@ -124,7 +126,7 @@ Because the build validates book data, a bad data edit fails CI and never reache
 |---|---|---|
 | `astro` | runtime/build | Framework (bundles Vite, Zod 4) |
 | GitHub Pages | hosting | Static hosting |
-| GitHub Actions | CI/CD | Build + deploy (planned) |
+| GitHub Actions | CI/CD | Build + deploy |
 
 No analytics, fonts, CDNs or third-party scripts. The page uses system fonts.
 

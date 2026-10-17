@@ -62,6 +62,9 @@ When asked to add or update books in `src/data/books.json`:
 
 - Patrick's machine has two `gh` accounts: a **work** account (usually active) and `patrickebyrne11` (**personal**, owns this repo). Never use the work account for this repo. For `gh` commands, prefix with `GH_TOKEN=$(gh auth token -u patrickebyrne11)`. Note `gh auth refresh` has no `-u` flag; it acts on the active account.
 - Git identity is set **repo-locally** to the personal noreply email (`183407846+patrickebyrne11@users.noreply.github.com`). Don't change global git config.
+- The default git credential is the work account. Push as the personal account for that command only:
+  `git -c credential.helper= -c 'credential.helper=!f() { echo username=patrickebyrne11; echo "password=$(gh auth token -u patrickebyrne11)"; }; f' push`
+- Pushing to `main` deploys to production (GitHub Pages). Run `npm run build` first and confirm with Patrick before pushing.
 
 ## Astro development
 

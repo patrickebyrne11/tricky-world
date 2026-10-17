@@ -44,3 +44,27 @@ Template:
 **What I'd do differently:**
 - Run scaffolding commands unpiped (or with `npx --yes`) so interactive prompts aren't hidden.
 - *Patrick to add his own reflections here.*
+
+---
+
+## 2026-10-17: First CI/CD pipeline (GitHub Actions to GitHub Pages)
+
+**Technology / concept:** GitHub Actions, GitHub Pages deployments, OIDC, least-privilege workflow permissions, concurrency control, OAuth token scopes.
+
+**Why introduced:** To get v1 online with every push to `main` deployed automatically and bad builds blocked.
+
+**What I implemented:** `.github/workflows/deploy.yml` (written by Patrick): a two-job pipeline `build` then `deploy`, using `withastro/action` and `actions/deploy-pages`. Enabled Pages with build type "workflow".
+
+**What I learned:**
+- **A workflow is a small DAG.** Jobs are tasks, `needs:` is a dependency edge, and artifacts pass outputs between jobs, like Airflow/Step Functions tasks handing off via S3.
+- **CI as a quality gate.** The build doubles as data validation, so a broken `books.json` fails the pipeline and the previous site stays live. Same idea as failing a dbt run before publishing a model.
+- **`permissions:` is IAM for the workflow token.** Grant only what's needed. `id-token: write` enables OIDC: the job proves its identity with a short-lived signed token instead of a stored secret, the same mechanism as GitHub Actions assuming an AWS role.
+- **`concurrency:`** serialises deploys so two pushes can't race.
+- **Token scopes.** Pushing files under `.github/workflows/` requires the `workflow` OAuth scope, a separate permission from `repo`, because workflows can run code with repo credentials.
+
+**Challenges:**
+- `gh auth refresh` has no `-u` flag; it only acts on the active account. Fix: `gh auth switch`, refresh, switch back.
+- Keeping work and personal identities separate: repo-local git email, per-command credential helper for pushes, and squashing an unpushed commit to remove the work username before it became public.
+
+**What I'd do differently:**
+- *Patrick to add.*

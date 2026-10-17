@@ -9,18 +9,18 @@ Committed work is above the line, speculative ideas below it. Move items between
 - **2026-10-17**: Base layout, navigation, homepage, `/books` library page (sorted by status, status counts, half-star ratings, responsive, dark mode). Base-path-aware links via `url()`.
 - **2026-10-17**: Project documentation: README, AGENTS.md, mission, architecture, roadmap, ADRs, learning log.
 - **2026-10-17**: Library status filter (vanilla TypeScript, progressive enhancement), implemented by Patrick.
+- **2026-10-17**: Deployed to GitHub Pages via GitHub Actions (workflow written by Patrick). Live at https://patrickebyrne11.github.io/tricky-world/. **Phase 1 v1 milestone reached.**
 
 ## In progress
 
-- **Deploy to GitHub Pages** (see Next, item 1).
+- Nothing. Pick the next item below.
 
 ## Next (Phase 1, committed)
 
-1. **Deploy to GitHub Pages.** Add `.github/workflows/deploy.yml`, set Pages source to GitHub Actions, verify the live URL. The personal `gh` token needs the `workflow` scope first. `gh auth refresh` only acts on the *active* account, so: `gh auth switch -u patrickebyrne11 && gh auth refresh -h github.com -s workflow; gh auth switch -u <work-account>`.
-2. **Replace example books with the real library.** Remove the "Example data" notice in `books.astro` at the same time.
-3. **Search** by title/author on the library page (client-side, same pattern as the filter). Optional: sync filter/search to the URL (`?status=read`) so views are shareable.
-4. **Type checking in CI.** Consider `astro check` (adds `@astrojs/check` + `typescript` as dev dependencies), since `astro build` doesn't type-check.
-5. Close the known data gaps (entry missing `id`, same book under two ids). For example, a small validation script run in CI.
+1. **Replace example books with the real library.** Remove the "Example data" notice in `books.astro` at the same time.
+2. **Search** by title/author on the library page (client-side, same pattern as the filter). Optional: sync filter/search to the URL (`?status=read`) so views are shareable.
+3. **Type checking in CI.** Consider `astro check` (adds `@astrojs/check` + `typescript` as dev dependencies), since `astro build` doesn't type-check.
+4. Close the known data gaps (entry missing `id`, same book under two ids). For example, a small validation script run in CI.
 
 ---
 

@@ -47,7 +47,7 @@ Use **Astro** (v7, `minimal` template) with TypeScript in strict mode, generatin
 
 ## ADR-002: GitHub Pages for static hosting
 
-- **Status:** Accepted (deployment workflow not yet built)
+- **Status:** Accepted (live since 2026-10-17)
 - **Date:** 2026-10-17
 
 ### Context
