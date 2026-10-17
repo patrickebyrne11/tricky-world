@@ -8,7 +8,9 @@ const books = (await getCollection('books'))
   .map((entry) => entry.data)
   .sort(
     (a, b) =>
-      READING_STATUSES.indexOf(a.status) - READING_STATUSES.indexOf(b.status) || a.title.localeCompare(b.title),
+      READING_STATUSES.indexOf(a.status) - READING_STATUSES.indexOf(b.status) ||
+      (b.yearRead ?? 0) - (a.yearRead ?? 0) ||
+      a.title.localeCompare(b.title),
   );
 
 const counts = Object.fromEntries(
@@ -18,11 +20,6 @@ const counts = Object.fromEntries(
 
 <BaseLayout title="Library" description="Books I'm reading, have read, and want to read.">
   <h1>Library</h1>
-
-  <p class="notice">
-    <strong>Example data.</strong> These are placeholder entries while the real library is being added. Ratings and dates
-    are not real.
-  </p>
 
   <div class="filters" role="group" aria-label="Filter by reading status">
     <button type="button" data-filter="all" aria-pressed="true">All ({books.length})</button>
@@ -75,14 +72,6 @@ const counts = Object.fromEntries(
 </script>
 
 <style>
-  .notice {
-    padding: 0.6rem 0.9rem;
-    border: 1px dashed var(--border);
-    border-radius: var(--radius);
-    font-size: 0.875rem;
-    color: var(--muted);
-  }
-
   .filters {
     display: flex;
     flex-wrap: wrap;

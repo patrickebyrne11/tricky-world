@@ -1,34 +1,41 @@
 [
-  {
-    "id": "designing-data-intensive-applications-martin-kleppmann",
-    "title": "Designing Data-Intensive Applications",
-    "author": "Martin Kleppmann",
-    "status": "reading",
-    "genres": ["Software Engineering"]
-  },
-  {
-    "id": "the-pragmatic-programmer-david-thomas-andrew-hunt",
-    "title": "The Pragmatic Programmer",
-    "author": "David Thomas, Andrew Hunt",
-    "status": "read",
-    "rating": 4.5,
-    "genres": ["Software Engineering"],
-    "review": "Example review text. Replace with a real one.",
-    "dateCompleted": "2026-01-15"
-  },
-  {
-    "id": "project-hail-mary-andy-weir",
-    "title": "Project Hail Mary",
-    "author": "Andy Weir",
-    "status": "read",
-    "rating": 5,
-    "genres": ["Fiction", "Science Fiction"]
-  },
-  {
-    "id": "a-philosophy-of-software-design-john-ousterhout",
-    "title": "A Philosophy of Software Design",
-    "author": "John Ousterhout",
-    "status": "want-to-read",
-    "genres": ["Software Engineering"]
-  }
+  { "id": "the-godfather-mario-puzo", "title": "The Godfather", "author": "Mario Puzo", "status": "read", "yearRead": 2022 },
+  { "id": "never-let-me-go-kazuo-ishiguro", "title": "Never Let Me Go", "author": "Kazuo Ishiguro", "status": "read", "yearRead": 2022 },
+  { "id": "a-little-life-hanya-yanagihara", "title": "A Little Life", "author": "Hanya Yanagihara", "status": "read", "yearRead": 2022 },
+  { "id": "small-things-like-these-claire-keegan", "title": "Small Things Like These", "author": "Claire Keegan", "status": "read", "yearRead": 2022 },
+  { "id": "talking-to-my-daughter-about-the-economy-yanis-varoufakis", "title": "Talking to My Daughter About the Economy", "author": "Yanis Varoufakis", "status": "read", "yearRead": 2022 },
+
+  { "id": "breakfast-at-tiffanys-truman-capote", "title": "Breakfast at Tiffany's", "author": "Truman Capote", "status": "read", "yearRead": 2023 },
+  { "id": "the-metamorphosis-franz-kafka", "title": "The Metamorphosis", "author": "Franz Kafka", "status": "read", "yearRead": 2023 },
+  { "id": "skippy-dies-paul-murray", "title": "Skippy Dies", "author": "Paul Murray", "status": "read", "yearRead": 2023 },
+  { "id": "fear-and-loathing-in-las-vegas-hunter-s-thompson", "title": "Fear and Loathing in Las Vegas", "author": "Hunter S. Thompson", "status": "read", "yearRead": 2023 },
+  { "id": "the-queen-of-dirt-island-donal-ryan", "title": "The Queen of Dirt Island", "author": "Donal Ryan", "status": "read", "yearRead": 2023 },
+  { "id": "wild-swans-jung-chang", "title": "Wild Swans", "author": "Jung Chang", "status": "read", "yearRead": 2023 },
+  { "id": "foster-claire-keegan", "title": "Foster", "author": "Claire Keegan", "status": "read", "yearRead": 2023 },
+  { "id": "slaughterhouse-five-kurt-vonnegut", "title": "Slaughterhouse-Five", "author": "Kurt Vonnegut", "status": "read", "yearRead": 2023 },
+  { "id": "the-boys-in-the-boat-daniel-james-brown", "title": "The Boys in the Boat", "author": "Daniel James Brown", "status": "read", "yearRead": 2023 },
+  { "id": "into-thin-air-jon-krakauer", "title": "Into Thin Air", "author": "Jon Krakauer", "status": "read", "yearRead": 2023 },
+  { "id": "dune-frank-herbert", "title": "Dune", "author": "Frank Herbert", "status": "read", "yearRead": 2023 },
+  { "id": "the-giver-lois-lowry", "title": "The Giver", "author": "Lois Lowry", "status": "read", "yearRead": 2023 },
+  { "id": "lord-of-the-flies-william-golding", "title": "Lord of the Flies", "author": "William Golding", "status": "read", "yearRead": 2023 },
+  { "id": "prophet-song-paul-lynch", "title": "Prophet Song", "author": "Paul Lynch", "status": "read", "yearRead": 2023 },
+
+  { "id": "born-to-run-christopher-mcdougall", "title": "Born to Run", "author": "Christopher McDougall", "status": "read", "yearRead": 2024 },
+  { "id": "the-moon-is-a-harsh-mistress-robert-a-heinlein", "title": "The Moon Is a Harsh Mistress", "author": "Robert A. Heinlein", "status": "read", "yearRead": 2024 },
+  { "id": "the-bee-sting-paul-murray", "title": "The Bee Sting", "author": "Paul Murray", "status": "read", "yearRead": 2024 },
+  { "id": "the-house-of-doors-tan-twan-eng", "title": "The House of Doors", "author": "Tan Twan Eng", "status": "read", "yearRead": 2024 },
+  { "id": "so-late-in-the-day-claire-keegan", "title": "So Late in the Day", "author": "Claire Keegan", "status": "read", "yearRead": 2024 },
+  { "id": "all-quiet-on-the-western-front-erich-maria-remarque", "title": "All Quiet on the Western Front", "author": "Erich Maria Remarque", "status": "read", "yearRead": 2024 },
+  { "id": "paddy-clarke-ha-ha-ha-roddy-doyle", "title": "Paddy Clarke Ha Ha Ha", "author": "Roddy Doyle", "status": "read", "yearRead": 2024 },
+  { "id": "the-moon-and-sixpence-w-somerset-maugham", "title": "The Moon and Sixpence", "author": "W. Somerset Maugham", "status": "read", "yearRead": 2024 },
+  { "id": "green-hills-of-africa-ernest-hemingway", "title": "Green Hills of Africa", "author": "Ernest Hemingway", "status": "read", "yearRead": 2024 },
+  { "id": "juno-loves-legs-karl-geary", "title": "Juno Loves Legs", "author": "Karl Geary", "status": "read", "yearRead": 2024 },
+  { "id": "enduring-love-ian-mcewan", "title": "Enduring Love", "author": "Ian McEwan", "status": "read", "yearRead": 2024 },
+  { "id": "hillbilly-elegy-j-d-vance", "title": "Hillbilly Elegy", "author": "J. D. Vance", "status": "read", "yearRead": 2024 },
+  { "id": "me-cheeta-james-lever", "title": "Me Cheeta", "author": "James Lever", "status": "read", "yearRead": 2024 },
+  { "id": "mans-search-for-meaning-viktor-e-frankl", "title": "Man's Search for Meaning", "author": "Viktor E. Frankl", "status": "read", "yearRead": 2024 },
+  { "id": "wild-houses-colin-barrett", "title": "Wild Houses", "author": "Colin Barrett", "status": "read", "yearRead": 2024 },
+  { "id": "james-percival-everett", "title": "James", "author": "Percival Everett", "status": "read", "yearRead": 2024 },
+
+  { "id": "station-eleven-emily-st-john-mandel", "title": "Station Eleven", "author": "Emily St. John Mandel", "status": "read", "yearRead": 2025 }
 ]

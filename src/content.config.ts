@@ -17,12 +17,12 @@ const books = defineCollection({
       rating: z.number().min(0.5).max(5).multipleOf(0.5).optional(),
       genres: z.array(z.string().trim().min(1)).optional(),
       review: z.string().trim().min(1).optional(),
-      dateCompleted: z.iso.date().optional(),
+      yearRead: z.number().int().min(1900).max(new Date().getFullYear()).optional(),
       cover: z.url().optional(),
     })
-    .refine((book) => book.dateCompleted === undefined || book.status === 'read', {
-      message: 'dateCompleted is only allowed when status is "read"',
-      path: ['dateCompleted'],
+    .refine((book) => book.yearRead === undefined || book.status === 'read', {
+      message: 'yearRead is only allowed when status is "read"',
+      path: ['yearRead'],
     }),
 });
 

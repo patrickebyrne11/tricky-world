@@ -10,6 +10,7 @@ Committed work is above the line, speculative ideas below it. Move items between
 - **2026-10-17**: Project documentation: README, AGENTS.md, mission, architecture, roadmap, ADRs, learning log.
 - **2026-10-17**: Library status filter (vanilla TypeScript, progressive enhancement), implemented by Patrick.
 - **2026-10-17**: Deployed to GitHub Pages via GitHub Actions (workflow written by Patrick). Live at https://patrickebyrne11.github.io/tricky-world/. **Phase 1 v1 milestone reached.**
+- **2026-10-17**: Real library imported: 36 books read 2022–2025. Example books removed. Schema: `dateCompleted` (full date) replaced with `yearRead` (year), since only years are known. Read books are sorted newest year first.
 
 ## In progress
 
@@ -17,7 +18,7 @@ Committed work is above the line, speculative ideas below it. Move items between
 
 ## Next (Phase 1, committed)
 
-1. **Replace example books with the real library.** Remove the "Example data" notice in `books.astro` at the same time.
+1. **Confirm interpreted library entries.** Patrick to check: *Born to Run* (assumed Christopher McDougall, not the Springsteen memoir), *Me Cheeta* (James Lever, from "Me, cetah"), *The Bee Sting* ("Beesting"), *Station Eleven* ("Eleven station"), *The Boys in the Boat* ("Boys on the boat"). Add currently-reading / want-to-read books, ratings and genres when he has them.
 2. **Search** by title/author on the library page (client-side, same pattern as the filter). Optional: sync filter/search to the URL (`?status=read`) so views are shareable.
 3. **Type checking in CI.** Consider `astro check` (adds `@astrojs/check` + `typescript` as dev dependencies), since `astro build` doesn't type-check.
 4. Close the known data gaps (entry missing `id`, same book under two ids). For example, a small validation script run in CI.

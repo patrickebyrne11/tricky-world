@@ -46,7 +46,8 @@ Act as a **mentor and technical partner**, not just a code generator:
 When asked to add or update books in `src/data/books.json`:
 
 - Follow the schema in `src/content.config.ts` (summarised in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#book-data)).
-- **Never invent** ratings, reading statuses, reviews, dates or covers. If Patrick didn't provide them, leave the optional fields out. If a required field (status) is missing, ask.
+- **Never invent** ratings, reading statuses, reviews, years read, genres or covers. If Patrick didn't provide them, leave the optional fields out. If a required field (status) is missing, ask.
+- Titles/authors: use the canonical published title and author. If Patrick's wording is a typo or ambiguous, make the best match and **tell him which entries were interpreted** so he can correct them.
 - **Avoid duplicates.** `id` is `title-author` in kebab-case. Check for an existing entry (also by title + author, in case of a different slug) before adding.
 - Run `npm run build` afterwards. It fails on schema violations and duplicate ids.
 

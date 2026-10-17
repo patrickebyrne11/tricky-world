@@ -7,10 +7,6 @@ interface Props {
 }
 
 const { book } = Astro.props;
-
-const finished =
-  book.dateCompleted &&
-  new Date(book.dateCompleted).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
 
 <article class="book">
@@ -30,7 +26,7 @@ const finished =
           </span>
         )
       }
-      {finished && <time datetime={book.dateCompleted}>Finished {finished}</time>}
+      {book.yearRead && <span>{book.yearRead}</span>}
     </p>
     {book.genres && <p class="genres">{book.genres.join(' · ')}</p>}
     {book.review && <p class="review">{book.review}</p>}

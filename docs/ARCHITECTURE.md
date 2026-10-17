@@ -84,7 +84,7 @@ Source of truth: `src/data/books.json`, an array of objects. It's loaded with As
 | `rating` | number | no | 0.5–5 in steps of 0.5 |
 | `genres` | string[] | no | Free text, e.g. `["Fiction", "Science Fiction"]` |
 | `review` | string | no | Non-empty |
-| `dateCompleted` | string | no | ISO date `YYYY-MM-DD`; only allowed when `status` is `"read"` |
+| `yearRead` | integer | no | Year finished, 1900 to the current year; only allowed when `status` is `"read"` |
 | `cover` | string | no | Absolute URL |
 
 Display labels for statuses live in `src/lib/reading-status.ts` (codes are stable, labels can change).
@@ -93,7 +93,7 @@ Display labels for statuses live in `src/lib/reading-status.ts` (codes are stabl
 
 | Problem | Result |
 |---|---|
-| Invalid value (bad status, rating 7, bad date) | Build fails, naming the entry and field |
+| Invalid value (bad status, rating 7, year in the future) | Build fails, naming the entry and field |
 | Unknown field (e.g. `"raiting"`) | Build fails (`z.strictObject`) |
 | Duplicate `id` | Build fails (`prerenderConflictBehavior: 'error'`; Astro's default is only a warning) |
 | Entry missing `id` | **Known gap:** Astro logs an error and skips the entry, but the build passes |
