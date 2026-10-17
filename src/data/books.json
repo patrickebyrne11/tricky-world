@@ -1,0 +1,34 @@
+[
+  {
+    "id": "designing-data-intensive-applications-martin-kleppmann",
+    "title": "Designing Data-Intensive Applications",
+    "author": "Martin Kleppmann",
+    "status": "reading",
+    "genres": ["Software Engineering"]
+  },
+  {
+    "id": "the-pragmatic-programmer-david-thomas-andrew-hunt",
+    "title": "The Pragmatic Programmer",
+    "author": "David Thomas, Andrew Hunt",
+    "status": "read",
+    "rating": 4.5,
+    "genres": ["Software Engineering"],
+    "review": "Example review text. Replace with a real one.",
+    "dateCompleted": "2026-01-15"
+  },
+  {
+    "id": "project-hail-mary-andy-weir",
+    "title": "Project Hail Mary",
+    "author": "Andy Weir",
+    "status": "read",
+    "rating": 5,
+    "genres": ["Fiction", "Science Fiction"]
+  },
+  {
+    "id": "a-philosophy-of-software-design-john-ousterhout",
+    "title": "A Philosophy of Software Design",
+    "author": "John Ousterhout",
+    "status": "want-to-read",
+    "genres": ["Software Engineering"]
+  }
+]

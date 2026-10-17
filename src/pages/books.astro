@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BookCard from '../components/BookCard.astro';
+import { READING_STATUSES, STATUS_LABELS } from '../lib/reading-status';
+
+const books = (await getCollection('books'))
+  .map((entry) => entry.data)
+  .sort(
+    (a, b) =>
+      READING_STATUSES.indexOf(a.status) - READING_STATUSES.indexOf(b.status) || a.title.localeCompare(b.title),
+  );
+
+const counts = Object.fromEntries(
+  READING_STATUSES.map((status) => [status, books.filter((book) => book.status === status).length]),
+);
+---
+
+<BaseLayout title="Library" description="Books I'm reading, have read, and want to read.">
+  <h1>Library</h1>
+
+  <p class="notice">
+    <strong>Example data.</strong> These are placeholder entries while the real library is being added. Ratings and dates
+    are not real.
+  </p>
+
+  <div class="filters" role="group" aria-label="Filter by reading status">
+    <button type="button" data-filter="all" aria-pressed="true">All ({books.length})</button>
+    {
+      READING_STATUSES.map((status) => (
+        <button type="button" data-filter={status} aria-pressed="false">
+          {STATUS_LABELS[status]} ({counts[status]})
+        </button>
+      ))
+    }
+  </div>
+
+  <ul class="book-list">
+    {
+      books.map((book) => (
+        <li data-status={book.status}>
+          <BookCard book={book} />
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="empty" hidden>No books match this filter.</p>
+</BaseLayout>
+
+<script>
+  // YOUR TURN: make the filter buttons work. See the brief in chat.
+</script>
+
+<style>
+  .notice {
+    padding: 0.6rem 0.9rem;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .filters button {
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .filters button[aria-pressed='true'] {
+    border-color: var(--fg);
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .book-list {
+    display: grid;
+    gap: 1.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .empty {
+    color: var(--muted);
+  }
+</style>

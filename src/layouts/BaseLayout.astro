@@ -1,0 +1,56 @@
+---
+import '../styles/global.css';
+import { url } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'A little corner of the internet for books, projects and experiments.',
+} = Astro.props;
+
+const pageTitle = title ? `${title} · Tricky World` : 'Tricky World';
+const stripSlash = (path: string) => path.replace(/\/$/, '');
+const currentPath = stripSlash(Astro.url.pathname);
+
+const nav = [
+  { href: url(''), label: 'Home' },
+  { href: url('books'), label: 'Books' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+    <link rel="icon" href={url('favicon.ico')} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="site-name" href={url('')}>Tricky World</a>
+      <nav aria-label="Main">
+        {
+          nav.map((item) => (
+            <a href={item.href} aria-current={currentPath === stripSlash(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <a href="https://github.com/patrickebyrne11/tricky-world">Source on GitHub</a>
+    </footer>
+  </body>
+</html>

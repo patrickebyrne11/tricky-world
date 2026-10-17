@@ -1,16 +1,74 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../lib/url';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+  <section class="intro">
+    <h1>Tricky World</h1>
+    <p class="tagline">A little corner of the internet for books, projects and experiments.</p>
+    <p>
+      I'm Patrick (Tricky to most). I'm a data engineer heading towards engineering management, and this site is where I
+      build things to learn how software works end to end, from idea to production.
+    </p>
+  </section>
+
+  <section>
+    <h2>Explore</h2>
+    <ul class="links">
+      <li>
+        <a href={url('books')}>Library</a>
+        <span>What I'm reading, have read, and want to read.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Coming later</h2>
+    <p class="muted">Writing, engineering projects, hackathon demos and a few personal tools. Built when they're ready.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro h1 {
+    margin-bottom: 0.25rem;
+    font-size: 2.25rem;
+  }
+
+  .tagline {
+    margin-top: 0;
+    font-size: 1.15rem;
+    color: var(--muted);
+  }
+
+  section + section {
+    margin-top: 2.5rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .links {
+    padding: 0;
+    list-style: none;
+  }
+
+  .links li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.75rem;
+  }
+
+  .links a {
+    font-weight: 600;
+  }
+
+  .links span,
+  .muted {
+    color: var(--muted);
+  }
+</style>

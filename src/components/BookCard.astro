@@ -1,0 +1,108 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { STATUS_LABELS } from '../lib/reading-status';
+
+interface Props {
+  book: CollectionEntry<'books'>['data'];
+}
+
+const { book } = Astro.props;
+
+const finished =
+  book.dateCompleted &&
+  new Date(book.dateCompleted).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+
+<article class="book">
+  {book.cover && <img class="cover" src={book.cover} alt="" loading="lazy" width="72" />}
+  <div>
+    <h2 class="title">{book.title}</h2>
+    <p class="author">{book.author}</p>
+    <p class="meta">
+      <span class:list={['status', `status-${book.status}`]}>{STATUS_LABELS[book.status]}</span>
+      {
+        book.rating !== undefined && (
+          <span class="rating" role="img" aria-label={`Rated ${book.rating} out of 5`}>
+            <span class="rating-fill" style={`width: ${(book.rating / 5) * 100}%`}>
+              ★★★★★
+            </span>
+            ★★★★★
+          </span>
+        )
+      }
+      {finished && <time datetime={book.dateCompleted}>Finished {finished}</time>}
+    </p>
+    {book.genres && <p class="genres">{book.genres.join(' · ')}</p>}
+    {book.review && <p class="review">{book.review}</p>}
+  </div>
+</article>
+
+<style>
+  .book {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .cover {
+    flex-shrink: 0;
+    height: auto;
+    border-radius: var(--radius);
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .author {
+    margin: 0.1rem 0 0.4rem;
+    color: var(--muted);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.9rem;
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .status {
+    padding: 0.05rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+
+  .status-reading {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Two stacked rows of stars: grey underneath, gold clipped to the rating width (supports half stars). */
+  .rating {
+    position: relative;
+    display: inline-block;
+    color: var(--star-empty);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .rating-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    overflow: hidden;
+    color: var(--star);
+  }
+
+  .genres {
+    margin: 0.4rem 0 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .review {
+    margin: 0.5rem 0 0;
+  }
+</style>
