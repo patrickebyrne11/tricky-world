@@ -82,7 +82,7 @@ edgeRuntime.serve(async (request: Request): Promise<Response> => {
     ?? 'Tricky World <onboarding@resend.dev>';
   const moderationUrl = edgeRuntime.env.get('MODERATION_URL');
   const reviewLine = moderationUrl
-    ? `\n\nReview it in Supabase Studio: ${moderationUrl}`
+    ? `\n\nReview it on Tricky World: ${moderationUrl}`
     : '\n\nReview it in the Supabase Studio takes table.';
 
   const response = await fetch('https://api.resend.com/emails', {
@@ -103,7 +103,7 @@ edgeRuntime.serve(async (request: Request): Promise<Response> => {
         <blockquote>${escapeHtml(record.body)}</blockquote>
         <p><strong>Take ID:</strong> ${escapeHtml(record.id)}</p>
         ${moderationUrl
-          ? `<p><a href="${escapeHtml(moderationUrl)}">Review it in Supabase Studio</a></p>`
+          ? `<p><a href="${escapeHtml(moderationUrl)}">Review pending takes</a></p>`
           : '<p>Review it in the Supabase Studio takes table.</p>'}
       `,
     }),

@@ -19,8 +19,10 @@ interface Elements {
   authSignedOut: HTMLElement;
   authStatus: HTMLElement;
   emailInput: HTMLInputElement;
+  guestSignInButton: HTMLButtonElement;
   list: HTMLUListElement;
   listStatus: HTMLElement;
+  moderatorLink: HTMLAnchorElement;
   signOutButton: HTMLButtonElement;
   submitForm: HTMLFormElement;
   submitPanel: HTMLElement;
@@ -54,8 +56,10 @@ function getElements(): Elements {
     authSignedOut: required(app, '[data-auth-signed-out]'),
     authStatus: required(app, '[data-auth-status]'),
     emailInput: required(app, '[data-auth-email]'),
+    guestSignInButton: required(app, '[data-guest-sign-in]'),
     list: required(app, '[data-takes-list]'),
     listStatus: required(app, '[data-list-status]'),
+    moderatorLink: required(app, '[data-moderator-link]'),
     signOutButton: required(app, '[data-sign-out]'),
     submitForm: required(app, '[data-submit-form]'),
     submitPanel: required(app, '[data-submit-panel]'),
@@ -178,8 +182,19 @@ export async function mountTakesApp(): Promise<void> {
     elements.authSignedIn.hidden = !signedIn;
     elements.authSignedOut.hidden = signedIn;
     elements.submitPanel.hidden = !signedIn;
-    elements.userEmail.textContent = session?.user.email ?? '';
+    elements.moderatorLink.hidden = session?.user.app_metadata.role !== 'moderator';
+    elements.userEmail.textContent = session?.user.email ?? 'guest';
   };
+
+  elements.guestSignInButton.addEventListener('click', async () => {
+    elements.guestSignInButton.disabled = true;
+    elements.authStatus.textContent = 'Joining…';
+    const { error } = await client.auth.signInAnonymously();
+    elements.authStatus.textContent = error
+      ? friendlyAuthError(error.message)
+      : 'You’re in.';
+    elements.guestSignInButton.disabled = false;
+  });
 
   elements.authForm.addEventListener('submit', async (event) => {
     event.preventDefault();

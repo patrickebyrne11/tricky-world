@@ -51,6 +51,7 @@ tricky-world/
     │   ├── reading-status.ts # status codes + display labels
     │   ├── strava.ts         # optional build-time Strava totals client
     │   ├── takes.ts          # Supabase auth, loading, submissions and voting
+    │   ├── takes-admin.ts    # Moderator-only queue and approval actions
     │   └── url.ts            # url(): prefix paths with the deploy base path
     ├── layouts/BaseLayout.astro  # <head>, header nav, footer
     ├── components/BookCard.astro # one book
@@ -59,6 +60,8 @@ tricky-world/
         ├── index.astro       # /
         ├── books.astro       # /books
         ├── takes.astro       # /takes
+        ├── takes/
+        │   └── admin.astro   # /takes/admin
         └── training.astro    # /training
 ```
 
@@ -71,7 +74,7 @@ tricky-world/
 
 ## Hot Takes runtime boundary
 
-`/takes` is still static HTML, but its client bundle uses `@supabase/supabase-js` to load live data and manage email magic-link sessions. The public project URL and publishable key are embedded in the browser bundle by design. They identify the Supabase project but do not grant privileged access.
+`/takes` is still static HTML, but its client bundle uses `@supabase/supabase-js` to load live data and manage guest or email magic-link sessions. Guest access is temporary for friend testing and creates an anonymous Supabase user tied to one browser profile. The public project URL and publishable key are embedded in the browser bundle by design. They identify the Supabase project but do not grant privileged access.
 
 Postgres remains the authorization boundary:
 
@@ -80,8 +83,8 @@ Postgres remains the authorization boundary:
 - `submit_take()` and `cast_vote()` require an authenticated JWT and validate their operation in the database.
 - `(take_id, user_id)` is the vote primary key, so one active vote per person is a database invariant.
 - A trigger forces submissions to `pending`, assigns the authenticated user, trims input, and enforces a ten-minute cooldown.
-- Moderation starts in Supabase Studio. A future admin UI can use `moderate_take()`, which checks protected auth app metadata.
-- An asynchronous database webhook invokes the `notify-pending-take` Edge Function after inserts. Pending rows produce a Resend email to the moderator; seed/system rows are ignored. A separate webhook secret authenticates the call, and provider credentials remain in Supabase project secrets.
+- `/takes/admin` calls `get_pending_takes()` and `moderate_take()`. Both check protected auth app metadata inside Postgres; hiding the link is convenience, not authorization. Supabase Studio remains an emergency fallback.
+- An asynchronous database webhook invokes the `notify-pending-take` Edge Function after inserts. Pending rows produce a Resend email linking to the admin queue; seed/system rows are ignored. A separate webhook secret authenticates the call, and provider credentials remain in Supabase project secrets.
 - The initial approved take has a fixed UUID and is inserted by a production migration; `supabase/seed.sql` supplies the same row after local database resets.
 
 The page includes a static contribution explainer without JavaScript, but the live board cannot progressively render on GitHub Pages without browser JavaScript: there is no request-time server. Setup and verification steps are in [HOT_TAKES_SETUP.md](HOT_TAKES_SETUP.md).

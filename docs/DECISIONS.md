@@ -245,3 +245,57 @@ Use a Supabase Database Webhook on `takes` inserts to invoke a Supabase Edge Fun
 - Resend is another external account and processor. A verified sender domain is needed beyond initial account-owner testing.
 - Delivery is observable but not durable: failed webhook/email calls need manual inspection and retry in the MVP.
 - The webhook configuration is currently a documented dashboard step because its project URL and shared secret are environment-specific.
+
+---
+
+## ADR-009: Moderator queue and Resend-owned email delivery
+
+- **Status:** Accepted
+- **Date:** 2026-10-19
+- **Supersedes:** ADR-007's decision to use Supabase Studio as the normal moderation interface; Studio remains a fallback.
+
+### Context
+
+Real use showed that copying UUIDs and running SQL for every decision is too much friction. The built-in Supabase Auth test sender also rate-limited repeated magic-link testing. Patrick needs an email when a take arrives and a small queue where only his moderator identity can approve or reject it.
+
+### Decision
+
+Add a static `/takes/admin` page backed by two narrow Postgres functions: `get_pending_takes()` and `moderate_take()`. Both authorize the protected `app_metadata.role` claim inside Postgres. Hide the board's admin link from ordinary accounts for usability, but never treat a hidden route or client-side check as authorization.
+
+Keep the existing database-webhook → Edge Function → Resend notification path and link emails to the admin page. Configure Resend as Supabase Auth's custom SMTP provider after verifying a sender domain, so Supabase continues to issue and validate magic links while the project controls email delivery and provider limits.
+
+### Alternatives considered
+
+- **Continue with Supabase Studio:** secure and already available, but too awkward for routine moderation and requires database-level access.
+- **Approve directly from email:** fewer clicks, but email scanners can follow links automatically; a state-changing GET link is unsafe, while signed one-time action tokens add unnecessary complexity.
+- **Move to a server-rendered private route:** could hide the page shell, but requires changing hosting for a problem already secured at the database boundary.
+- **Replace Supabase Auth:** gives more control but would mean building session/token security without a product requirement that justifies it.
+
+### Consequences
+
+- Anyone can discover the static admin URL, but non-moderators receive no queue data and cannot mutate takes.
+- Patrick needs a valid Supabase session; the admin page can refresh its JWT after role changes without another email.
+- Resend credentials exist only in Supabase configuration/secrets. They never enter the GitHub Pages bundle.
+- A verified sender domain is required before custom Auth SMTP is suitable for friends.
+
+---
+
+## ADR-010: Temporary guest access for friend testing
+
+- **Status:** Accepted temporarily
+- **Date:** 2026-10-19
+
+### Context
+
+Supabase's built-in Auth mail allowance blocks rapid friend testing before custom SMTP is configured. Removing authentication entirely would also remove stable user IDs and break the database guarantees around vote ownership and submission cooldowns.
+
+### Decision
+
+Offer both **Join as guest** and email magic-link sign-in on the public board. Guest access uses Supabase anonymous Auth, so each browser receives an authenticated UUID without an email. Keep moderator access on verified email Auth and protected `app_metadata`; anonymous sessions can never self-assign the moderator role.
+
+### Consequences
+
+- Existing `authenticated` RPC grants, ownership rules, cooldowns and the one-vote composite key work without schema changes.
+- A guest identity belongs to one browser profile. Clearing storage, changing browsers or using private browsing creates another user, so this mode is not a strong one-person-one-vote guarantee.
+- Supabase rate-limits anonymous creation by IP. Add CAPTCHA or disable guest access before opening the board beyond the friend test.
+- Email sign-in remains available for persistent identities and becomes the preferred public path after Resend SMTP is configured.

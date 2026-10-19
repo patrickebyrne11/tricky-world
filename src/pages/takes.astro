@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../lib/url';
 ---
 
 <BaseLayout title="Hot Takes" description="Short opinions. Pick a side.">
@@ -7,8 +8,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <p class="eyebrow">Public opinion</p>
     <h1>Hot Takes</h1>
     <h2 id="contribute-heading">Drop your hot takes all over</h2>
-    <p>Sign in, send me your take, and I’ll approve it if it’s not like racist or whatever? Then everyone can vote Agree or Disagree.</p>
-    <p>Your email will be private.</p>
+    <p>Join as a guest or sign in, send me your take, and I’ll approve it if it’s not like racist or whatever? Then everyone can vote Agree or Disagree.</p>
   </header>
 
   <div class="takes-app" data-takes-app>
@@ -16,7 +16,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <h2 id="account-heading">Your account</h2>
 
       <div data-auth-signed-out>
-        <p>Sign in by email to submit a take or vote.</p>
+        <p>Get a temporary account in this browser. No email needed.</p>
+        <button type="button" data-guest-sign-in>Join as guest</button>
+
+        <p class="auth-divider">Or sign in by email to keep the same account across devices.</p>
         <form data-auth-form class="inline-form">
           <label for="email">Email</label>
           <div>
@@ -28,6 +31,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       <div data-auth-signed-in hidden>
         <p>Signed in as <strong data-user-email></strong>.</p>
+        <p><a href={url('/takes/admin')} data-moderator-link hidden>Review pending takes</a></p>
         <button type="button" data-sign-out>Sign out</button>
       </div>
       <p class="form-status" data-auth-status aria-live="polite"></p>
@@ -171,6 +175,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   [data-list-status] {
     color: var(--muted);
     font-size: 0.85rem;
+  }
+
+  .auth-divider {
+    margin-top: 1.25rem;
   }
 
   .takes-list {

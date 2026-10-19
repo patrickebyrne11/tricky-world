@@ -151,3 +151,39 @@ Template:
 **Challenges:** Email providers require sender verification for general delivery. The provider's onboarding address is enough for testing to the account owner, but a custom sender needs a verified domain.
 
 **What I'd do differently:** Add a notification outbox and alert on exhausted retries before relying on email as the only moderation queue signal.
+
+---
+
+## 2026-10-19: Moderator UI over a static site
+
+**Technology / concept:** Capability-oriented RPCs, JWT claims, defence in depth, custom SMTP, static route versus protected data.
+
+**Why introduced:** Manual SQL was technically sufficient but operationally clumsy. Moderation needed to become a normal product workflow without moving the whole site off GitHub Pages.
+
+**What I implemented:** A static `/takes/admin` page, moderator-only pending queue RPC, approve/reject controls, a JWT refresh action, notification links to the queue, and documented Resend SMTP delivery for Auth mail.
+
+**What I learned:**
+- **A private-looking URL is not authorization.** Static hosts publish the page shell to everyone. The database must decide whether the caller may receive queue data or change status.
+- **Design APIs around capabilities.** `get_pending_takes()` exposes exactly the moderation fields needed, rather than granting the browser table access. This is comparable to a governed stored procedure instead of broad warehouse table privileges.
+- **Authentication and delivery can be separate.** Supabase can own magic-link tokens and sessions while Resend owns SMTP delivery and its limits.
+- **Avoid state changes in email GET links.** Security scanners may open links. Email leads to an authenticated queue; approval still requires an explicit POST-style RPC action.
+
+**Challenges:** Moderator metadata is copied into the JWT. Changing database-side user metadata does not rewrite an existing token, so the client needs a safe refresh path.
+
+**What I'd do differently:** Build the small moderation queue as soon as the first manual approval demonstrates real friction, instead of treating operational UX as optional polish.
+
+---
+
+## 2026-10-19: Temporary anonymous Auth for friend testing
+
+**Technology / concept:** Supabase anonymous users, browser-persisted sessions, identity strength versus authorization.
+
+**Why introduced:** Friends need to test submissions and voting immediately, while the default magic-link sender is rate-limited and custom SMTP is not active yet.
+
+**What I implemented:** A one-click **Join as guest** path alongside persistent email sign-in. It creates a real authenticated Supabase user without collecting email.
+
+**What I learned:** Anonymous authentication is different from no authentication. It still supplies `auth.uid()` and works with the same RLS/RPC boundary, but identifies a browser installation rather than a verified person. Database ownership remains sound; the product claim "one person, one vote" becomes weaker.
+
+**Challenges:** Anonymous users share the `authenticated` Postgres role, so authorization must continue to depend on protected claims for moderator actions rather than the role alone.
+
+**What I'd do differently:** Configure custom SMTP before a concentrated test session, then use guest access only when its browser-level identity trade-off is intentional.

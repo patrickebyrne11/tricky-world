@@ -1,0 +1,169 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { url } from '../../lib/url';
+---
+
+<BaseLayout title="Review Hot Takes" description="Patrick's Hot Takes moderation queue.">
+  <header class="page-intro">
+    <p class="eyebrow">Moderator only</p>
+    <h1>Review Hot Takes</h1>
+    <p><a href={url('/takes')}>← Back to the board</a></p>
+  </header>
+
+  <div class="admin-app" data-admin-app>
+    <section data-admin-signed-out>
+      <h2>Sign in</h2>
+      <p>Use Patrick’s moderator account to open the queue.</p>
+      <form data-admin-auth-form>
+        <label for="admin-email">Email</label>
+        <div class="inline-form">
+          <input id="admin-email" data-admin-email name="email" type="email" autocomplete="email" required />
+          <button type="submit">Send sign-in link</button>
+        </div>
+      </form>
+      <p class="status" data-admin-auth-status aria-live="polite"></p>
+    </section>
+
+    <section data-admin-signed-in hidden>
+      <div class="account-row">
+        <p>Signed in as <strong data-admin-user-email></strong>.</p>
+        <div>
+          <button type="button" data-admin-refresh-access>Refresh access</button>
+          <button type="button" data-admin-sign-out>Sign out</button>
+        </div>
+      </div>
+      <p class="status" data-admin-access-status aria-live="polite">Checking moderator access…</p>
+
+      <div data-admin-queue hidden>
+        <h2>Pending</h2>
+        <p class="status" data-admin-list-status aria-live="polite">Loading pending takes…</p>
+        <ul class="pending-list" data-admin-list></ul>
+      </div>
+    </section>
+
+    <noscript><p>This moderation queue needs JavaScript to authenticate and load pending takes.</p></noscript>
+  </div>
+</BaseLayout>
+
+<script>
+  import { mountTakesAdmin } from '../../lib/takes-admin';
+  void mountTakesAdmin();
+</script>
+
+<style>
+  .page-intro {
+    margin-bottom: 2rem;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0.2rem 0 1rem;
+  }
+
+  h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.4rem;
+  }
+
+  .admin-app > section {
+    padding: 1rem;
+    border: var(--border-width) solid var(--line);
+    background: var(--surface);
+  }
+
+  form label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .inline-form,
+  .account-row,
+  :global(.moderation-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .account-row {
+    justify-content: space-between;
+  }
+
+  input,
+  button {
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    font: inherit;
+  }
+
+  input {
+    flex: 1 1 14rem;
+    min-width: 0;
+    padding: 0.5rem;
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  button {
+    padding: 0.45rem 0.75rem;
+    background: var(--fg);
+    color: var(--bg);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  button:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .status,
+  :global(.pending-meta) {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .pending-list {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  :global(.pending-card) {
+    padding: 1rem;
+    border: var(--border-width) solid var(--line);
+    background: var(--bg);
+  }
+
+  :global(.pending-body) {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+  }
+
+  :global(.reject-button) {
+    background: var(--rust);
+  }
+</style>

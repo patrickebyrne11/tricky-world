@@ -23,7 +23,7 @@ The long-term purpose is in [docs/MISSION.md](docs/MISSION.md).
 - **Homepage** (`/`): introduction and navigation.
 - **Library** (`/books`): personal reading list with reading status, half-star ratings, genres, optional reviews and the year each book was read. Book data is checked against a schema at build time, and books can be filtered by status.
 - **Training** (`/training`): aggregate run, ride and swim totals from Strava when credentials are available at build time; otherwise it degrades to an unavailable message.
-- **Hot Takes** (`/takes`): a small opinion board for friends, backed by Supabase. Approved takes and aggregate votes are public; authentication is required to submit or vote.
+- **Hot Takes** (`/takes`): a small opinion board for friends, backed by Supabase. Approved takes and aggregate votes are public; guests or email-authenticated users can submit and vote. A moderator-only queue lives at `/takes/admin`.
 
 ## Technology stack
 
