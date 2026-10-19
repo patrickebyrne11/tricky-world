@@ -1,4 +1,9 @@
-import { STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN } from 'astro:env/server';
+import {
+  STRAVA_ACCESS_TOKEN,
+  STRAVA_CLIENT_ID,
+  STRAVA_CLIENT_SECRET,
+  STRAVA_REFRESH_TOKEN,
+} from 'astro:env/server';
 import { z } from 'astro/zod';
 
 const API_BASE = 'https://www.strava.com/api/v3';
@@ -57,13 +62,23 @@ async function getAccessToken(clientId: string, clientSecret: string, refreshTok
  * so a Strava outage or missing credentials never blocks a deploy.
  */
 export async function getStravaStats(): Promise<SportStats[] | null> {
-  if (!STRAVA_CLIENT_ID || !STRAVA_CLIENT_SECRET || !STRAVA_REFRESH_TOKEN) {
-    console.warn('[strava] Credentials not set; rendering without stats.');
-    return null;
+  let accessToken = STRAVA_ACCESS_TOKEN;
+
+  if (!accessToken) {
+    if (!STRAVA_CLIENT_ID || !STRAVA_CLIENT_SECRET || !STRAVA_REFRESH_TOKEN) {
+      console.warn('[strava] Credentials not set; rendering without stats.');
+      return null;
+    }
+
+    try {
+      accessToken = await getAccessToken(STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN);
+    } catch (error) {
+      console.warn(`[strava] Token refresh failed; rendering without stats. ${error instanceof Error ? error.message : error}`);
+      return null;
+    }
   }
 
   try {
-    const accessToken = await getAccessToken(STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN);
     const headers = { Authorization: `Bearer ${accessToken}` };
 
     const athlete = z.object({ id: z.number() }).parse(await getJson(`${API_BASE}/athlete`, { headers }));

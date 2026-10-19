@@ -113,8 +113,8 @@ GitHub Pages, public repo `patrickebyrne11/tricky-world`. Free, HTTPS by default
 
 **Status: live** since 2026-10-17.
 
-- Workflow [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml), triggered on push to `main` and manually (`workflow_dispatch`).
-- `build` job: `actions/checkout@v7`, then `withastro/action@v6` (`npm ci` + `npm run build`, uploads `dist/` as a Pages artifact).
+- Workflow [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml), triggered on push to `main`, daily, and manually (`workflow_dispatch`).
+- `build` job: `actions/checkout@v7`, refreshes Strava credentials when configured, then `withastro/action@v6` (`npm ci` + `npm run build`, uploads `dist/` as a Pages artifact). A daily schedule refreshes the static Strava snapshot. Token rotation is saved to the `STRAVA_REFRESH_TOKEN` Actions secret using `STRAVA_SECRET_WRITE_TOKEN`.
 - `deploy` job (`needs: build`): `actions/deploy-pages@v5` into the `github-pages` environment.
 - Least-privilege token permissions: `contents: read`, `pages: write`, `id-token: write` (OIDC, so no long-lived deploy credentials).
 - `concurrency: pages` with `cancel-in-progress: false`: deploys queue rather than race.
@@ -127,7 +127,7 @@ Because the build validates book data, a bad data edit fails CI and never reache
 | Dependency | Where | Purpose |
 |---|---|---|
 | `astro` | runtime/build | Framework (bundles Vite, Zod 4) |
-| Strava API | optional build-time service | Training totals in local builds; production activation is pending ([ADR-006](DECISIONS.md#adr-006-build-time-strava-totals-prototype)) |
+| Strava API | optional build-time service | Training snapshot refreshed daily ([ADR-006](DECISIONS.md#adr-006-build-time-strava-totals)) |
 | GitHub Pages | hosting | Static hosting |
 | GitHub Actions | CI/CD | Build + deploy |
 

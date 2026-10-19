@@ -16,6 +16,7 @@ export default defineConfig({
       STRAVA_CLIENT_ID: stravaSecret(),
       STRAVA_CLIENT_SECRET: stravaSecret(),
       STRAVA_REFRESH_TOKEN: stravaSecret(),
+      STRAVA_ACCESS_TOKEN: stravaSecret(),
     },
   },
 });

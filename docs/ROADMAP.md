@@ -15,7 +15,7 @@ Committed work is above the line, speculative ideas below it. Move items between
 
 ## In progress
 
-- **Strava training page prototype** ([ADR-006](DECISIONS.md#adr-006-build-time-strava-totals-prototype)). Route and build-time client implemented; production shows the safe unavailable state. Before activation: get written permission for public display and choose secure persistence for rotated refresh tokens.
+- **Strava training page** ([ADR-006](DECISIONS.md#adr-006-build-time-strava-totals)). Route and daily build refresh implemented. Add `STRAVA_SECRET_WRITE_TOKEN` (fine-grained token with Actions secrets write for this repo) to enable production snapshots; other Strava secrets are already configured.
 
 ## Next (Phase 1, committed)
 

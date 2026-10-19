@@ -57,6 +57,8 @@ Books live in [src/data/books.json](src/data/books.json). The rules each entry m
 
 Every push to `main` runs [.github/workflows/deploy.yml](.github/workflows/deploy.yml): GitHub Actions builds the site (which also validates the book data) and publishes `dist/` to GitHub Pages. If the build fails, the previous version stays live. Watch runs in the repo's **Actions** tab. Details in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment).
 
+The workflow also refreshes Strava training totals daily. It requires the `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`, and `STRAVA_SECRET_WRITE_TOKEN` Actions secrets; without them, the site still builds and shows the unavailable message.
+
 ## Documentation
 
 | Doc | Purpose |

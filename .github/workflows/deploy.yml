@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -17,9 +19,46 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      STRAVA_READY: ${{ secrets.STRAVA_CLIENT_ID != '' && secrets.STRAVA_CLIENT_SECRET != '' && secrets.STRAVA_REFRESH_TOKEN != '' && secrets.STRAVA_SECRET_WRITE_TOKEN != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+      - name: Refresh Strava token and save rotation
+        if: ${{ env.STRAVA_READY == 'true' }}
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          GH_TOKEN: ${{ secrets.STRAVA_SECRET_WRITE_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Confirm the write token can update this secret before asking Strava
+          # for a replacement token (which can invalidate the current one).
+          printf '%s' "$STRAVA_REFRESH_TOKEN" | gh secret set STRAVA_REFRESH_TOKEN \
+            --repo "$GITHUB_REPOSITORY" --app actions
+
+          if ! response=$(curl --silent --show-error --fail-with-body \
+            --request POST https://www.strava.com/oauth/token \
+            --data-urlencode "client_id=$STRAVA_CLIENT_ID" \
+            --data-urlencode "client_secret=$STRAVA_CLIENT_SECRET" \
+            --data-urlencode "grant_type=refresh_token" \
+            --data-urlencode "refresh_token=$STRAVA_REFRESH_TOKEN"); then
+            echo "::warning::Strava token refresh failed; deploying without training stats."
+            exit 0
+          fi
+
+          if ! access_token=$(jq -er '.access_token' <<< "$response") || \
+             ! refresh_token=$(jq -er '.refresh_token' <<< "$response"); then
+            echo "::warning::Strava returned an invalid token response; deploying without training stats."
+            exit 0
+          fi
+          echo "::add-mask::$access_token"
+          echo "::add-mask::$refresh_token"
+          echo "STRAVA_ACCESS_TOKEN=$access_token" >> "$GITHUB_ENV"
+          printf '%s' "$refresh_token" | gh secret set STRAVA_REFRESH_TOKEN \
+            --repo "$GITHUB_REPOSITORY" --app actions
       - name: Install, build and upload site
         uses: withastro/action@v6
 

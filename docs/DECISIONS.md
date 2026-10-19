@@ -147,18 +147,18 @@ As filtering grows (multiple filters, sorting, stats, charts), vanilla DOM code 
 
 ---
 
-## ADR-006: Build-time Strava totals prototype
+## ADR-006: Build-time Strava totals
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-19
 
 ### Context
 Show Patrick's Strava training totals on the site. The site is static on GitHub Pages: no server, no runtime secrets.
 
 ### Decision
-Prototype fetching totals from the Strava API **at build time** (`src/lib/strava.ts`). Credentials (client id, secret, refresh token) are declared in `astro.config.mjs` via `astro:env` as optional server secrets. Show **aggregate totals only** (no individual activities or maps). If credentials are missing or the API fails, the page renders "unavailable" and the build still succeeds.
+Fetch totals from the Strava API **at build time** (`src/lib/strava.ts`) and publish the generated static snapshot. The GitHub Actions workflow refreshes the short-lived access token daily and updates the `STRAVA_REFRESH_TOKEN` repository secret when Strava rotates it. This uses a fine-grained GitHub token stored as `STRAVA_SECRET_WRITE_TOKEN`, limited to this repository's Actions secrets. Show **aggregate totals only** (no individual activities or maps). Without all required secrets, the page renders "unavailable" and the build still succeeds.
 
-Do not pass the credentials into the production workflow or add a schedule yet. Production activation needs written confirmation from Strava that public display is permitted and a secure way to persist rotated refresh tokens.
+Patrick reports Strava confirmed that these personal totals may be shown publicly.
 
 ### Alternatives considered
 - **Strava embed widget:** zero code and no terms risk, but little to learn and no control over design.
@@ -171,7 +171,7 @@ Do not pass the credentials into the production workflow or add a schedule yet. 
 - Same pattern as a scheduled pipeline feeding a materialised table.
 
 ### Trade-offs and consequences
-- A static scheduled build cannot currently persist refresh-token rotation. Strava can return a new refresh token and immediately invalidate the old one, so storing one fixed GitHub secret is not a durable design.
+- If the secret-write token is missing or expires, scheduled refresh is skipped and the static page renders "unavailable"; fix the token and run the workflow again.
 - Fail-soft means a broken token goes unnoticed except for a `[strava]` warning in the build log. Check the log if the page shows "unavailable".
-- Strava's API Agreement says a user's API data can only be displayed to that user. Get written confirmation from developers@strava.com before enabling this on a public page.
+- A refresh response may rotate the refresh token. The workflow saves the replacement immediately so the next run uses the current token.
 - The stats endpoint only counts activities visible to Everyone.

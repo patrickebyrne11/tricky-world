@@ -93,19 +93,19 @@ Template:
 
 ---
 
-## 2026-10-19: Build-time API integration prototype
+## 2026-10-19: Build-time API integration
 
 **Technology / concept:** OAuth 2.0 refresh tokens, server-only Astro environment variables, build-time API calls, fail-soft static generation.
 
 **Why introduced:** Add aggregate Strava training totals without introducing a runtime backend.
 
-**What I implemented:** An optional Strava client validated with Zod and a progressively rendered `/training` page. Missing credentials or API failures do not block the site build.
+**What I implemented:** An optional Strava client validated with Zod and a progressively rendered `/training` page. The deploy workflow refreshes the API token daily and saves rotated refresh tokens to GitHub Actions secrets. Missing credentials do not block the site build.
 
 **What I learned:**
 - Server-only build variables keep credentials out of browser bundles, but a static build still needs somewhere durable to store changing authentication state.
-- Strava may rotate a refresh token when issuing an access token and immediately invalidate the old token. A fixed CI secret therefore cannot support unattended scheduled refreshes by itself.
+- Strava may rotate a refresh token when issuing an access token and immediately invalidate the old token. The workflow needs narrowly scoped permission to update the stored GitHub secret after each refresh.
 - API access and permission to publish the returned data are separate concerns. Technical access does not override the provider's API agreement.
 
-**Challenges:** The initial scheduled-build design had no secure persistence mechanism for rotated refresh tokens and would have failed after rotation.
+**Challenges:** Making the static build unattended requires keeping authentication state current in Actions secrets.
 
 **What I'd do differently:** Confirm API publication terms and token lifecycle before designing the deployment workflow.
