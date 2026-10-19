@@ -4,71 +4,82 @@ import { url } from '../lib/url';
 ---
 
 <BaseLayout>
-  <section class="intro">
-    <h1>Tricky World</h1>
-    <p class="tagline">A little corner of the internet for books, projects and experiments.</p>
-    <p>
-      I'm Patrick (Tricky to most). I'm a data engineer heading towards engineering management, and this site is where I
-      build things to learn how software works end to end, from idea to production.
-    </p>
-  </section>
-
   <section>
     <h2>Explore</h2>
     <ul class="links">
       <li>
         <a href={url('books')}>Library</a>
-        <span>What I'm reading, have read, and want to read.</span>
+        <span>Books read and to read.</span>
       </li>
     </ul>
   </section>
 
   <section>
-    <h2>Coming later</h2>
-    <p class="muted">Writing, engineering projects, hackathon demos and a few personal tools. Built when they're ready.</p>
+    <h2>Coming soon</h2>
+    <ul class="links soon">
+      <li>Writing</li>
+      <li>Projects</li>
+      <li>Tools</li>
+    </ul>
   </section>
 </BaseLayout>
 
 <style>
-  .intro h1 {
-    margin-bottom: 0.25rem;
-    font-size: 2.25rem;
-  }
-
-  .tagline {
-    margin-top: 0;
-    font-size: 1.15rem;
-    color: var(--muted);
-  }
-
   section + section {
-    margin-top: 2.5rem;
+    margin-top: 3rem;
   }
 
   h2 {
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    margin: 0 0 1rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
     color: var(--muted);
   }
 
   .links {
+    margin: 0;
     padding: 0;
     list-style: none;
+    border-top: var(--border-width) solid var(--line);
   }
 
   .links li {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 0.75rem;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .links a,
+  .soon li {
+    font-family: var(--font-display);
+    font-stretch: condensed;
+    font-weight: 800;
+    font-size: clamp(2rem, 7vw, 3.25rem);
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   .links a {
-    font-weight: 600;
+    color: var(--fg);
+    text-decoration: none;
   }
 
-  .links span,
-  .muted {
+  .links a:hover {
+    color: var(--accent);
+  }
+
+  .links span {
     color: var(--muted);
+    font-family: var(--font-serif);
+    font-style: italic;
+  }
+
+  .soon li {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--muted);
   }
 </style>

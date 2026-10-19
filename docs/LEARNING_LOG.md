@@ -68,3 +68,25 @@ Template:
 
 **What I'd do differently:**
 - *Patrick to add.*
+
+---
+
+## 2026-10-19: Visual redesign with design tokens
+
+**Technology / concept:** CSS custom properties as a two-layer token system, `:nth-child` patterns, `prefers-reduced-motion`, SVG `feTurbulence` noise as a data-URI overlay, `font-stretch`, `-webkit-text-stroke`, `color-mix()`.
+
+**Why introduced:** The site looked generic. First pass (pastel, chunky) read as childish; second pass went earthier and more editorial.
+
+**What I implemented:** Restyled `global.css`, `BookCard.astro`, `index.astro` and `books.astro`. Homepage intro removed.
+
+**What I learned:**
+- **Palette vs theme tokens.** Fixed colours (`--rust`, `--ink`) are one layer; semantic tokens (`--bg`, `--fg`, `--line`) point at them and are the only thing dark mode overrides. Like raw/staging models vs marts: change the mapping, not every consumer. This is why the second redesign was mostly a token swap.
+- **Components can expose CSS variables as a parameter.** `BookCard` reads `--card-accent`; the list sets it per `:nth-child(4n + k)`. The card doesn't know about the list.
+- **"Imperfect" is deliberate.** Sub-degree rotations, a 3px offset text-shadow and a grain overlay make flat CSS look printed rather than templated.
+- **Respect motion preferences.** Hover animations sit inside `@media (prefers-reduced-motion: no-preference)`.
+
+**Challenges:**
+- System font stacks only: Futura and Iowan Old Style exist on macOS; other platforms fall back to Arial Narrow / Georgia.
+
+**What I'd do differently:**
+- *Patrick to add.*

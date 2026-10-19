@@ -80,14 +80,22 @@ const counts = Object.fromEntries(
   }
 
   .filters button {
-    padding: 0.35rem 0.85rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
     background: transparent;
     color: var(--fg);
     font: inherit;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     cursor: pointer;
+  }
+
+  .filters button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   .filters button[aria-pressed='true'] {
@@ -98,9 +106,44 @@ const counts = Object.fromEntries(
 
   .book-list {
     display: grid;
-    gap: 1.75rem;
+    gap: 1.5rem;
     padding: 0;
     list-style: none;
+  }
+
+  .book-list > li:nth-child(4n + 1) {
+    --card-accent: var(--rust);
+    --tilt: -0.3deg;
+  }
+
+  .book-list > li:nth-child(4n + 2) {
+    --card-accent: var(--teal);
+    --tilt: 0.2deg;
+  }
+
+  .book-list > li:nth-child(4n + 3) {
+    --card-accent: var(--mustard);
+    --tilt: -0.1deg;
+  }
+
+  .book-list > li:nth-child(4n + 4) {
+    --card-accent: var(--olive);
+    --tilt: 0.35deg;
+  }
+
+  /* A fraction of a degree off-square, so the grid looks hand-pasted rather than perfect. */
+  .book-list > li {
+    transform: rotate(var(--tilt));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .book-list > li {
+      transition: transform 0.2s ease;
+    }
+
+    .book-list > li:hover {
+      transform: rotate(0deg);
+    }
   }
 
   .empty {

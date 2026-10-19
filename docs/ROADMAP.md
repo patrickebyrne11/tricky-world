@@ -11,6 +11,7 @@ Committed work is above the line, speculative ideas below it. Move items between
 - **2026-10-17**: Library status filter (vanilla TypeScript, progressive enhancement), implemented by Patrick.
 - **2026-10-17**: Deployed to GitHub Pages via GitHub Actions (workflow written by Patrick). Live at https://patrickebyrne11.github.io/tricky-world/. **Phase 1 v1 milestone reached.**
 - **2026-10-17**: Real library imported: 36 books read 2022–2025. Example books removed. Schema: `dateCompleted` (full date) replaced with `yearRead` (year), since only years are known. Read books are sorted newest year first.
+- **2026-10-19**: Visual redesign loosely inspired by Tyler, the Creator's later eras: bone/forest/rust palette, condensed uppercase type with a misregistered-print headline, film grain, stamp-style labels, cards a fraction off-square. Homepage cut down to Explore + Coming soon. Plain CSS, no new dependencies.
 
 ## In progress
 

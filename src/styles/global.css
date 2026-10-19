@@ -1,25 +1,43 @@
 :root {
   color-scheme: light dark;
-  --bg: #fdfcf9;
-  --fg: #1f1f1f;
-  --muted: #6b6b6b;
-  --border: #e4e1da;
-  --accent: #b5482b;
-  --star: #e0a526;
-  --star-empty: #d8d4cb;
-  --radius: 6px;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Palette: fixed colours that don't change with the theme. */
+  --bone: #ece3cf;
+  --bone-deep: #e2d6bc;
+  --ink: #171612;
+  --forest: #1d2b22;
+  --rust: #c2491d;
+  --mustard: #d4a017;
+  --teal: #3d7a72;
+  --olive: #77733a;
+  --oxblood: #7d2b22;
+
+  /* Theme tokens: these flip in dark mode. */
+  --bg: var(--bone);
+  --surface: var(--bone-deep);
+  --fg: var(--ink);
+  --muted: #5d574b;
+  --line: var(--ink);
+  --accent: var(--rust);
+  --grain-opacity: 0.18;
+
+  --radius: 2px;
+  --border-width: 2px;
+  --font-display: 'Futura', 'Avenir Next Condensed', 'Arial Narrow', sans-serif;
+  --font-serif: 'Iowan Old Style', 'Palatino', 'Georgia', serif;
+  font-family: 'Helvetica Neue', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #161616;
-    --fg: #e8e6e1;
-    --muted: #9a978f;
-    --border: #2e2d2a;
-    --accent: #e58a6c;
-    --star-empty: #3d3b37;
+    --bg: #121612;
+    --surface: var(--forest);
+    --fg: var(--bone);
+    --muted: #a9a290;
+    --line: var(--bone);
+    --accent: var(--mustard);
+    --grain-opacity: 0.12;
   }
 }
 
@@ -29,49 +47,97 @@
   box-sizing: border-box;
 }
 
+html {
+  background-color: var(--bg);
+  border-top: 6px solid var(--accent);
+}
+
+/* Film-grain overlay so flat colours read like printed paper. */
+html::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-color-scheme: dark) {
+  html::after {
+    mix-blend-mode: screen;
+  }
+}
+
 body {
   margin: 0 auto;
   max-width: 46rem;
   padding: 0 1.25rem;
-  background: var(--bg);
   color: var(--fg);
 }
 
 a {
   color: var(--accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
 }
 
 h1,
 h2,
 h3 {
-  line-height: 1.25;
+  font-family: var(--font-display);
+  font-stretch: condensed;
+  font-weight: 800;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+/* Slightly misregistered print: one offset colour layer behind the ink. */
+h1 {
+  font-size: clamp(2.75rem, 9vw, 4.75rem);
+  text-shadow: 3px 2px 0 var(--accent);
 }
 
 .site-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem 1.5rem;
-  padding: 1.5rem 0;
-  border-bottom: 1px solid var(--border);
+  gap: 0.75rem 1.5rem;
+  padding: 1.75rem 0 1rem;
+  border-bottom: var(--border-width) solid var(--line);
 }
 
+/* Styled like a sewn-in clothing label. */
 .site-name {
-  font-weight: 700;
+  display: inline-block;
+  padding: 0.15rem 0.6rem 0.1rem;
+  background: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-stretch: condensed;
+  font-weight: 800;
   font-size: 1.15rem;
-  color: var(--fg);
+  letter-spacing: 0.12em;
   text-decoration: none;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
 }
 
 .site-header nav {
   display: flex;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .site-header nav a {
   color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-decoration: none;
+  text-transform: uppercase;
 }
 
 .site-header nav a:hover,
@@ -79,17 +145,36 @@ h3 {
   color: var(--fg);
 }
 
+.site-header nav a[aria-current='page'] {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}
+
 main {
   padding: 2rem 0 3rem;
 }
 
 .site-footer {
-  padding: 1.5rem 0 2rem;
-  border-top: 1px solid var(--border);
-  font-size: 0.875rem;
+  padding: 1.25rem 0 2rem;
+  border-top: var(--border-width) solid var(--line);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
 .site-footer a {
   color: inherit;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-name {
+    transition: transform 0.2s ease;
+  }
+
+  .site-name:hover {
+    transform: rotate(0deg);
+  }
 }

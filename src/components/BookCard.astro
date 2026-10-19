@@ -34,25 +34,34 @@ const { book } = Astro.props;
 </article>
 
 <style>
+  /* --card-accent is set by the parent list. */
   .book {
     display: flex;
     gap: 1rem;
+    padding: 1rem 1.15rem;
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: 4px 4px 0 var(--card-accent, var(--accent));
   }
 
   .cover {
     flex-shrink: 0;
     height: auto;
-    border-radius: var(--radius);
+    border: 1.5px solid var(--line);
+    transform: rotate(-2deg);
   }
 
   .title {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
   }
 
   .author {
-    margin: 0.1rem 0 0.4rem;
+    margin: 0.25rem 0 0.6rem;
     color: var(--muted);
+    font-family: var(--font-serif);
+    font-style: italic;
   }
 
   .meta {
@@ -61,26 +70,33 @@ const { book } = Astro.props;
     align-items: center;
     gap: 0.4rem 0.9rem;
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: var(--muted);
   }
 
+  /* Rubber-stamp label. */
   .status {
-    padding: 0.05rem 0.55rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
+    padding: 0.05rem 0.45rem;
+    border: 1.5px solid currentColor;
+    border-radius: var(--radius);
+    color: var(--fg);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
   }
 
   .status-reading {
     border-color: var(--accent);
-    color: var(--accent);
+    background: var(--accent);
+    color: var(--bg);
   }
 
-  /* Two stacked rows of stars: grey underneath, gold clipped to the rating width (supports half stars). */
+  /* Two stacked rows of stars: faded underneath, solid clipped to the rating width (supports half stars). */
   .rating {
     position: relative;
     display: inline-block;
-    color: var(--star-empty);
+    color: color-mix(in srgb, var(--fg) 20%, transparent);
     letter-spacing: 0.05em;
     white-space: nowrap;
   }
@@ -89,16 +105,19 @@ const { book } = Astro.props;
     position: absolute;
     inset: 0 auto 0 0;
     overflow: hidden;
-    color: var(--star);
+    color: var(--fg);
   }
 
   .genres {
-    margin: 0.4rem 0 0;
-    font-size: 0.8rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     color: var(--muted);
   }
 
   .review {
     margin: 0.5rem 0 0;
+    font-family: var(--font-serif);
   }
 </style>
