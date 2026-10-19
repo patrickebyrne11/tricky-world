@@ -13,7 +13,7 @@ npx supabase link --project-ref <project-ref>
 npx supabase db push
 ```
 
-`db push` applies `supabase/migrations/202610190001_create_hot_takes.sql`. Do not paste a service-role key into this repository or into a `PUBLIC_` variable.
+`db push` applies the versioned files in `supabase/migrations/`: the schema followed by the initial approved take. Do not paste a service-role key into this repository or into a `PUBLIC_` variable.
 
 For a fully local database, Docker must be running:
 

@@ -82,6 +82,7 @@ Postgres remains the authorization boundary:
 - A trigger forces submissions to `pending`, assigns the authenticated user, trims input, and enforces a ten-minute cooldown.
 - Moderation starts in Supabase Studio. A future admin UI can use `moderate_take()`, which checks protected auth app metadata.
 - An asynchronous database webhook invokes the `notify-pending-take` Edge Function after inserts. Pending rows produce a Resend email to the moderator; seed/system rows are ignored. A separate webhook secret authenticates the call, and provider credentials remain in Supabase project secrets.
+- The initial approved take has a fixed UUID and is inserted by a production migration; `supabase/seed.sql` supplies the same row after local database resets.
 
 The page includes a static contribution explainer without JavaScript, but the live board cannot progressively render on GitHub Pages without browser JavaScript: there is no request-time server. Setup and verification steps are in [HOT_TAKES_SETUP.md](HOT_TAKES_SETUP.md).
 

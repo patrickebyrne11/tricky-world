@@ -31,6 +31,14 @@ interface Elements {
 
 const configured = Boolean(PUBLIC_SUPABASE_URL && PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 
+function friendlyAuthError(message: string): string {
+  if (message.toLowerCase().includes('rate limit')) {
+    return 'Rate limit exceeded — hold your horses, you’re burning my server or something.';
+  }
+
+  return message;
+}
+
 function required<T extends Element>(root: ParentNode, selector: string): T {
   const element = root.querySelector<T>(selector);
   if (!element) throw new Error(`Missing Hot Takes element: ${selector}`);
@@ -184,7 +192,7 @@ export async function mountTakesApp(): Promise<void> {
       options: { emailRedirectTo: redirectUrl.toString() },
     });
     elements.authStatus.textContent = error
-      ? error.message
+      ? friendlyAuthError(error.message)
       : 'Check your email for a sign-in link.';
   });
 
