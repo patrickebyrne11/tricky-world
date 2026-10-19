@@ -7,11 +7,18 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro check && npm run check:functions && astro build",
+    "check": "astro check",
+    "check:functions": "tsc --ignoreConfig --noEmit --lib ES2022,DOM --module ESNext --target ES2022 --skipLibCheck supabase/functions/notify-pending-take/index.ts",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "astro": "^7.4.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.11",
+    "typescript": "^6.0.3"
   }
 }

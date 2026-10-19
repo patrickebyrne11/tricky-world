@@ -2,6 +2,7 @@
 import { defineConfig, envField } from 'astro/config';
 
 const stravaSecret = () => envField.string({ context: 'server', access: 'secret', optional: true });
+const publicClientValue = () => envField.string({ context: 'client', access: 'public', optional: true });
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,6 +18,8 @@ export default defineConfig({
       STRAVA_CLIENT_SECRET: stravaSecret(),
       STRAVA_REFRESH_TOKEN: stravaSecret(),
       STRAVA_ACCESS_TOKEN: stravaSecret(),
+      PUBLIC_SUPABASE_URL: publicClientValue(),
+      PUBLIC_SUPABASE_PUBLISHABLE_KEY: publicClientValue(),
     },
   },
 });

@@ -175,3 +175,73 @@ Patrick reports Strava confirmed that these personal totals may be shown publicl
 - Fail-soft means a broken token goes unnoticed except for a `[strava]` warning in the build log. Check the log if the page shows "unavailable".
 - A refresh response may rotate the refresh token. The workflow saves the replacement immediately so the next run uses the current token.
 - The stats endpoint only counts activities visible to Everyone.
+
+---
+
+## ADR-007: Supabase backend for Hot Takes
+
+- **Status:** Accepted
+- **Date:** 2026-10-19
+
+### Context
+
+Hot Takes needs persistent submissions, accounts, moderation, and per-user votes. GitHub Pages is static and cannot safely hold credentials or process writes. This is the first feature that genuinely requires a runtime backend.
+
+### Decision
+
+Keep Astro and GitHub Pages for the interface. Use Supabase Postgres, passwordless email Auth, and its Data API for Hot Takes only. The browser receives the public project URL and publishable key. It calls a narrow set of Postgres functions; base tables have RLS enabled and are not granted to browser roles. Use Supabase Studio for MVP moderation.
+
+### Alternatives considered
+
+- **Move the site to a full-stack Astro/Node host:** gives server routes, but changes hosting and operations for every page to serve one feature.
+- **Build a standalone API:** best control and a strong later learning project, but auth, email delivery, hosting and database operations multiply the MVP scope.
+- **Firebase:** comparable managed auth/data, but relational constraints and SQL are a better fit for one-vote uniqueness and Patrick's existing strengths.
+- **Anonymous voting/local storage:** simpler, but trivial to bypass and cannot reliably enforce one vote per person.
+
+### Reasons
+
+- Adds a backend only where persistence requires one; unrelated pages stay static.
+- Postgres constraints, functions and RLS make authorization testable at the data boundary.
+- Managed passwordless auth avoids storing passwords and operating email infrastructure.
+- The free tier is sufficient for a small prototype.
+
+### Trade-offs and consequences
+
+- The board depends on an external service and browser JavaScript; a paused or unavailable project makes the live board unavailable while the rest of the site keeps working.
+- The publishable key is public. Security must remain in Postgres, never in hidden UI controls.
+- The MVP assumes a small group of friends. Revisit moderation, privacy and operational controls before opening it to a wider audience.
+- `@supabase/supabase-js` becomes the site's second runtime dependency. It is isolated to the Hot Takes client module.
+
+---
+
+## ADR-008: Event-driven approval email through Resend
+
+- **Status:** Accepted
+- **Date:** 2026-10-19
+
+### Context
+
+Pending takes need human review, but Supabase Studio does not provide a purpose-built email notification for new application rows. Notification delivery must not expose an email API key in the static site or make take submission depend synchronously on an email provider.
+
+### Decision
+
+Use a Supabase Database Webhook on `takes` inserts to invoke a Supabase Edge Function asynchronously. The function accepts only requests with a dedicated webhook secret, ignores non-pending rows, and sends one moderator email through Resend. Store the Resend key, recipient, sender and webhook secret as Supabase project secrets. Use the take UUID as the provider idempotency key.
+
+### Alternatives considered
+
+- **Send from the browser:** rejected because it would expose the provider API key and let visitors send arbitrary mail.
+- **Send inside the submission database function:** rejected because email latency or failure would become part of the database transaction.
+- **Scheduled polling:** simpler failure recovery, but delays alerts and repeatedly queries an otherwise event-driven workflow.
+- **Gmail API/SMTP:** avoids another mail product but requires broader OAuth credentials and more token lifecycle work.
+
+### Reasons
+
+- Database webhooks use asynchronous `pg_net`, keeping submission independent from delivery latency.
+- Edge Functions are already part of the selected Supabase platform and keep credentials server-side.
+- Direct `fetch` to Resend needs no additional package; its free tier is ample for the ten-minute submission limit.
+
+### Trade-offs and consequences
+
+- Resend is another external account and processor. A verified sender domain is needed beyond initial account-owner testing.
+- Delivery is observable but not durable: failed webhook/email calls need manual inspection and retry in the MVP.
+- The webhook configuration is currently a documented dashboard step because its project URL and shared secret are environment-specific.

@@ -23,6 +23,7 @@ The long-term purpose is in [docs/MISSION.md](docs/MISSION.md).
 - **Homepage** (`/`): introduction and navigation.
 - **Library** (`/books`): personal reading list with reading status, half-star ratings, genres, optional reviews and the year each book was read. Book data is checked against a schema at build time, and books can be filtered by status.
 - **Training** (`/training`): aggregate run, ride and swim totals from Strava when credentials are available at build time; otherwise it degrades to an unavailable message.
+- **Hot Takes** (`/takes`): a small opinion board for friends, backed by Supabase. Approved takes and aggregate votes are public; authentication is required to submit or vote.
 
 ## Technology stack
 
@@ -34,7 +35,7 @@ The long-term purpose is in [docs/MISSION.md](docs/MISSION.md).
 | Content | Astro content collection over a JSON file, validated with Zod 4 |
 | Hosting | GitHub Pages (project site under `/tricky-world/`) |
 | CI/CD | GitHub Actions (build + deploy on push to `main`) |
-| Backend / database / auth | None, on purpose (see [docs/DECISIONS.md](docs/DECISIONS.md)) |
+| Backend / database / auth | Supabase Postgres + Auth for Hot Takes only |
 
 ## Local development
 
@@ -43,7 +44,8 @@ Prerequisites: Node.js ≥ 22.22 (developed on Node 24), npm, Git.
 ```sh
 npm install
 npm run dev        # http://localhost:4321/tricky-world/
-npm run build      # production build to ./dist (also validates book data)
+npm run check      # type-check Astro and TypeScript
+npm run build      # type-check + production build to ./dist (also validates book data)
 npm run preview    # serve ./dist locally
 ```
 
@@ -58,6 +60,8 @@ Books live in [src/data/books.json](src/data/books.json). The rules each entry m
 Every push to `main` runs [.github/workflows/deploy.yml](.github/workflows/deploy.yml): GitHub Actions builds the site (which also validates the book data) and publishes `dist/` to GitHub Pages. If the build fails, the previous version stays live. Watch runs in the repo's **Actions** tab. Details in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment).
 
 The workflow also refreshes Strava training totals daily. It requires the `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`, and `STRAVA_SECRET_WRITE_TOKEN` Actions secrets; without them, the site still builds and shows the unavailable message.
+
+Hot Takes requires the `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY` Actions variables. They are public browser configuration, not secrets. Approval-email credentials live separately in Supabase project secrets. Backend, notification and security setup is in [docs/HOT_TAKES_SETUP.md](docs/HOT_TAKES_SETUP.md).
 
 ## Documentation
 

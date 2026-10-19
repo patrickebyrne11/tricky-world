@@ -4,7 +4,7 @@
 
 ## Overview
 
-Tricky World is currently a **static site**. Astro runs at build time, reads source files (pages, components, JSON data), and outputs plain HTML/CSS (plus small JS bundles where a page needs them) into `dist/`. There is no server, database or API at runtime.
+Tricky World is a **static Astro site** with one opt-in runtime service. Astro outputs HTML/CSS/JS into `dist/`. Most pages need no backend; Hot Takes uses Supabase Postgres, Auth, and its generated Data API directly from the browser.
 
 ```mermaid
 flowchart LR
@@ -13,9 +13,11 @@ flowchart LR
   B --> D[dist/ static HTML/CSS/JS]
   D -->|GitHub Actions| E[GitHub Pages]
   E --> F[Browser]
+  F -->|Hot Takes only: publishable key + RPC| G[Supabase Auth / Data API]
+  G -->|functions, RLS, constraints| H[(Postgres)]
 ```
 
-A data-engineering analogy: the build is like a dbt run that **materialises** pages from source data. The browser only reads the materialised output. Client-side scripts are like dashboard filters on top of that output; they never change the source.
+A data-engineering analogy: the build is like a dbt run that **materialises** pages from source data. Most browser scripts are dashboard filters over that output. Hot Takes is the exception: its client calls a narrow, governed database function layer at runtime.
 
 ## Technology choices
 
@@ -27,6 +29,8 @@ A data-engineering analogy: the build is like a dbt run that **materialises** pa
 | Content | Content collection over one JSON file, Zod 4 schema | Single file to edit, validated at build ([ADR-003](DECISIONS.md#adr-003-repository-based-book-data-in-a-validated-content-collection)) |
 | Interactivity | Vanilla TypeScript `<script>`, progressive enhancement | No React until there's a real need ([ADR-005](DECISIONS.md#adr-005-progressive-enhancement-with-vanilla-scripts-before-react)) |
 | Hosting | GitHub Pages project site | Free, simple, HTTPS ([ADR-002](DECISIONS.md#adr-002-github-pages-for-static-hosting)) |
+| Hot Takes backend | Supabase Postgres + Auth | Persistent user data without moving the whole site to server hosting ([ADR-007](DECISIONS.md#adr-007-supabase-backend-for-hot-takes)) |
+| Static type checking | `astro check` | Checks `.astro` templates and browser TypeScript before every build |
 
 ## Project structure
 
@@ -35,7 +39,8 @@ tricky-world/
 ├── AGENTS.md                 # Instructions for AI assistants
 ├── README.md
 ├── astro.config.mjs          # site/base for GitHub Pages; fail on duplicate content ids
-├── package.json              # one runtime dependency: astro
+├── package.json              # runtime and development dependencies
+├── supabase/                 # Hot Takes migration and local seed data
 ├── tsconfig.json             # extends astro/tsconfigs/strict
 ├── public/                   # copied verbatim to dist/ (favicons)
 ├── docs/                     # mission, architecture, roadmap, ADRs, learning log
@@ -45,6 +50,7 @@ tricky-world/
     ├── lib/
     │   ├── reading-status.ts # status codes + display labels
     │   ├── strava.ts         # optional build-time Strava totals client
+    │   ├── takes.ts          # Supabase auth, loading, submissions and voting
     │   └── url.ts            # url(): prefix paths with the deploy base path
     ├── layouts/BaseLayout.astro  # <head>, header nav, footer
     ├── components/BookCard.astro # one book
@@ -52,6 +58,7 @@ tricky-world/
     └── pages/                # file-based routing
         ├── index.astro       # /
         ├── books.astro       # /books
+        ├── takes.astro       # /takes
         └── training.astro    # /training
 ```
 
@@ -61,6 +68,22 @@ tricky-world/
 - **Frontmatter runs at build time.** Code between the `---` fences runs in Node during the build, never in the browser.
 - **Scoped styles.** A `<style>` in a component only applies to that component.
 - **`<script>` tags are processed.** TypeScript in a page's `<script>` is compiled, bundled and shipped to the browser.
+
+## Hot Takes runtime boundary
+
+`/takes` is still static HTML, but its client bundle uses `@supabase/supabase-js` to load live data and manage email magic-link sessions. The public project URL and publishable key are embedded in the browser bundle by design. They identify the Supabase project but do not grant privileged access.
+
+Postgres remains the authorization boundary:
+
+- Base tables (`takes`, `votes`) have RLS enabled and no direct API grants.
+- `get_takes()` returns approved text, aggregate counts, and only the current viewer's own choice. It never returns author or voter IDs.
+- `submit_take()` and `cast_vote()` require an authenticated JWT and validate their operation in the database.
+- `(take_id, user_id)` is the vote primary key, so one active vote per person is a database invariant.
+- A trigger forces submissions to `pending`, assigns the authenticated user, trims input, and enforces a ten-minute cooldown.
+- Moderation starts in Supabase Studio. A future admin UI can use `moderate_take()`, which checks protected auth app metadata.
+- An asynchronous database webhook invokes the `notify-pending-take` Edge Function after inserts. Pending rows produce a Resend email to the moderator; seed/system rows are ignored. A separate webhook secret authenticates the call, and provider credentials remain in Supabase project secrets.
+
+The page includes a static contribution explainer without JavaScript, but the live board cannot progressively render on GitHub Pages without browser JavaScript: there is no request-time server. Setup and verification steps are in [HOT_TAKES_SETUP.md](HOT_TAKES_SETUP.md).
 
 ## Base path
 
@@ -127,11 +150,15 @@ Because the build validates book data, a bad data edit fails CI and never reache
 | Dependency | Where | Purpose |
 |---|---|---|
 | `astro` | runtime/build | Framework (bundles Vite, Zod 4) |
+| `@supabase/supabase-js` | browser runtime | Hot Takes auth and Data API client |
+| `@astrojs/check`, `typescript` | development/build | Static checking for Astro templates and TypeScript |
+| Supabase | Hot Takes runtime service | Postgres, passwordless auth and Data API |
+| Resend | Hot Takes notification service | Approval email sent by a Supabase Edge Function |
 | Strava API | optional build-time service | Training snapshot refreshed daily ([ADR-006](DECISIONS.md#adr-006-build-time-strava-totals)) |
 | GitHub Pages | hosting | Static hosting |
 | GitHub Actions | CI/CD | Build + deploy |
 
-No analytics, fonts, CDNs or third-party scripts. The page uses system fonts.
+No analytics, remote fonts or third-party scripts. The page uses system fonts. The Hot Takes client connects directly to the configured Supabase project.
 
 ## Development environment
 

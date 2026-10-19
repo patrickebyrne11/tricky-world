@@ -109,3 +109,45 @@ Template:
 **Challenges:** Making the static build unattended requires keeping authentication state current in Actions secrets.
 
 **What I'd do differently:** Confirm API publication terms and token lifecycle before designing the deployment workflow.
+
+---
+
+## 2026-10-19: First runtime backend and authorization boundary
+
+**Technology / concept:** Supabase Postgres, passwordless Auth, Row Level Security, database RPC functions, composite keys, browser sessions, Astro environment variables, static type checking.
+
+**Why introduced:** Hot Takes is the first feature whose data changes between site builds. Submissions and votes need durable state, authenticated ownership, and moderation.
+
+**What I implemented:** A static `/takes` shell with a vanilla TypeScript client; private `takes` and `votes` tables; aggregate-only reads; moderated submissions; atomic vote changes; database-enforced cooldown; and `astro check` as a build gate.
+
+**What I learned:**
+- **A publishable key is an identifier, not an authorization system.** Like exposing a warehouse account name, its visibility is expected. Grants, constraints, RLS and functions decide what the caller can do.
+- **The database can be the API boundary.** The browser calls narrow functions instead of reading operational tables. `get_takes()` behaves like a governed aggregate mart: public totals out, voter identities kept behind the boundary.
+- **Constraints beat UI promises.** The composite vote primary key makes duplicate active votes impossible even under concurrent requests. A trigger owns submission cooldown and forced pending status.
+- **Authentication and authorization differ.** Auth proves which user is calling; database logic decides whether that identity may submit, vote or moderate.
+- **Static and dynamic can coexist.** The main site remains build-time Astro. One client module connects to a runtime service only on the page that needs it.
+- **Bundling is not type checking.** `astro build` accepted the client, but `astro check` is now the explicit compiler gate for templates and TypeScript.
+
+**Challenges:** Seed data runs without a browser user, while real submissions must never be anonymous. The trigger therefore permits approved authorless seed rows only from a direct `postgres` session; Data API sessions cannot use that path.
+
+**What I'd do differently:** Add automated database integration tests once the Supabase project or local CLI environment is established, rather than relying on a manual pre-launch security checklist.
+
+---
+
+## 2026-10-19: Event-driven moderation notification
+
+**Technology / concept:** Database webhooks, asynchronous delivery, Supabase Edge Functions, transactional email, shared-secret authentication, idempotency keys.
+
+**Why introduced:** A pending take is useful only if the moderator knows it exists.
+
+**What I implemented:** An insert webhook invokes a server-side TypeScript function, which validates the event and sends an approval email through Resend without exposing credentials to the site.
+
+**What I learned:**
+- **Keep side effects outside the transaction.** The take is the source-of-truth event; email is a downstream notification. A provider outage should not reject valid data, like a non-critical event consumer should not roll back its producer.
+- **Authenticate internal webhooks.** An unguessable function URL is not authorization. The function checks an independently generated secret before processing user content.
+- **Design for at-least-once delivery.** Webhooks may repeat. Passing the take UUID as an idempotency key makes repeated delivery safe.
+- **Async is not the same as durable.** The MVP logs failed delivery but does not retry automatically. An outbox table plus scheduled retries would be the next reliability step if missed mail becomes costly.
+
+**Challenges:** Email providers require sender verification for general delivery. The provider's onboarding address is enough for testing to the account owner, but a custom sender needs a verified domain.
+
+**What I'd do differently:** Add a notification outbox and alert on exhausted retries before relying on email as the only moderation queue signal.
