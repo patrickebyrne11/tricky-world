@@ -144,3 +144,34 @@ Smallest JS payload, works without JS, and teaches the browser DOM APIs that Rea
 
 ### Trade-offs and consequences
 As filtering grows (multiple filters, sorting, stats, charts), vanilla DOM code gets messy. That's the trigger to introduce React in Phase 2.
+
+---
+
+## ADR-006: Build-time Strava totals prototype
+
+- **Status:** Proposed
+- **Date:** 2026-10-19
+
+### Context
+Show Patrick's Strava training totals on the site. The site is static on GitHub Pages: no server, no runtime secrets.
+
+### Decision
+Prototype fetching totals from the Strava API **at build time** (`src/lib/strava.ts`). Credentials (client id, secret, refresh token) are declared in `astro.config.mjs` via `astro:env` as optional server secrets. Show **aggregate totals only** (no individual activities or maps). If credentials are missing or the API fails, the page renders "unavailable" and the build still succeeds.
+
+Do not pass the credentials into the production workflow or add a schedule yet. Production activation needs written confirmation from Strava that public display is permitted and a secure way to persist rotated refresh tokens.
+
+### Alternatives considered
+- **Strava embed widget:** zero code and no terms risk, but little to learn and no control over design.
+- **Serverless function at request time:** live data, but needs separate hosting and runtime secret handling. Overkill for numbers that change daily.
+- **Commit fetched JSON to the repo:** gives history, but bot commits clutter git and need write permissions in CI.
+
+### Reasons
+- Secrets never reach the browser; they exist only in the build environment.
+- 3 API calls per build, far inside rate limits.
+- Same pattern as a scheduled pipeline feeding a materialised table.
+
+### Trade-offs and consequences
+- A static scheduled build cannot currently persist refresh-token rotation. Strava can return a new refresh token and immediately invalidate the old one, so storing one fixed GitHub secret is not a durable design.
+- Fail-soft means a broken token goes unnoticed except for a `[strava]` warning in the build log. Check the log if the page shows "unavailable".
+- Strava's API Agreement says a user's API data can only be displayed to that user. Get written confirmation from developers@strava.com before enabling this on a public page.
+- The stats endpoint only counts activities visible to Everyone.

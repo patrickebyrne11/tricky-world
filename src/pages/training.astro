@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getStravaStats, type ActivityTotal } from '../lib/strava';
+
+const sports = await getStravaStats();
+const updated = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const periods = [
+  { key: 'recent', label: 'Last 4 weeks' },
+  { key: 'yearToDate', label: 'This year' },
+  { key: 'allTime', label: 'All time' },
+] as const;
+
+const km = (total: ActivityTotal) => (total.distance / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 });
+const hours = (total: ActivityTotal) => Math.round(total.moving_time / 3600).toLocaleString('en-GB');
+const metres = (total: ActivityTotal) => Math.round(total.elevation_gain).toLocaleString('en-GB');
+---
+
+<BaseLayout title="Training" description="Running and riding totals from Strava.">
+  <h1>Training</h1>
+
+  {
+    sports ? (
+      sports.map((sport) => (
+        <section>
+          <h2>{sport.sport}</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" />
+                <th scope="col">Activities</th>
+                <th scope="col">km</th>
+                <th scope="col">Hours</th>
+                <th scope="col">Elev. m</th>
+              </tr>
+            </thead>
+            <tbody>
+              {periods.map((period) => (
+                <tr>
+                  <th scope="row">{period.label}</th>
+                  <td>{sport[period.key].count}</td>
+                  <td>{km(sport[period.key])}</td>
+                  <td>{hours(sport[period.key])}</td>
+                  <td>{metres(sport[period.key])}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      ))
+    ) : (
+      <p class="muted">Stats unavailable right now.</p>
+    )
+  }
+
+  <p class="muted source">
+    Updated {updated}. Public activities only. <a href="https://www.strava.com">Powered by Strava</a>
+  </p>
+</BaseLayout>
+
+<style>
+  section + section {
+    margin-top: 2.5rem;
+  }
+
+  h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.75rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: var(--border-width) solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  th,
+  td {
+    padding: 0.55rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+    text-align: right;
+  }
+
+  th[scope='row'] {
+    text-align: left;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  thead th {
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .source {
+    margin-top: 2.5rem;
+    font-size: 0.8rem;
+  }
+</style>

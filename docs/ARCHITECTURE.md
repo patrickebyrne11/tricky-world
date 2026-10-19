@@ -1,6 +1,6 @@
 # Architecture
 
-*Last updated: 2026-10-17. Keep this accurate. Update it in the same change that alters the architecture.*
+*Last updated: 2026-10-19. Keep this accurate. Update it in the same change that alters the architecture.*
 
 ## Overview
 
@@ -44,13 +44,15 @@ tricky-world/
     ├── data/books.json       # book data (source of truth for the library)
     ├── lib/
     │   ├── reading-status.ts # status codes + display labels
+    │   ├── strava.ts         # optional build-time Strava totals client
     │   └── url.ts            # url(): prefix paths with the deploy base path
     ├── layouts/BaseLayout.astro  # <head>, header nav, footer
     ├── components/BookCard.astro # one book
     ├── styles/global.css     # design tokens (CSS variables), base styles, dark mode
     └── pages/                # file-based routing
         ├── index.astro       # /
-        └── books.astro       # /books
+        ├── books.astro       # /books
+        └── training.astro    # /training
 ```
 
 ### Key Astro concepts in use
@@ -125,6 +127,7 @@ Because the build validates book data, a bad data edit fails CI and never reache
 | Dependency | Where | Purpose |
 |---|---|---|
 | `astro` | runtime/build | Framework (bundles Vite, Zod 4) |
+| Strava API | optional build-time service | Training totals in local builds; production activation is pending ([ADR-006](DECISIONS.md#adr-006-build-time-strava-totals-prototype)) |
 | GitHub Pages | hosting | Static hosting |
 | GitHub Actions | CI/CD | Build + deploy |
 

@@ -15,7 +15,7 @@ Committed work is above the line, speculative ideas below it. Move items between
 
 ## In progress
 
-- Nothing. Pick the next item below.
+- **Strava training page prototype** ([ADR-006](DECISIONS.md#adr-006-build-time-strava-totals-prototype)). Route and build-time client implemented; production shows the safe unavailable state. Before activation: get written permission for public display and choose secure persistence for rotated refresh tokens.
 
 ## Next (Phase 1, committed)
 
@@ -66,3 +66,11 @@ Playwright, Vitest, OpenTelemetry, structured logging, monitoring, Redis where j
 - Custom domain
 - Possible move to Next.js or another host *if* requirements outgrow Astro/GitHub Pages (an option, not a plan)
 - Kubernetes: only with a compelling learning or architectural reason
+- **Strava stats**: see In progress.
+- **Hand-entered fitness data**: Boditrax latest scan, calories. Neither has a usable public API (MyFitnessPal is partner-only). JSON + schema like `books.json`. Decide what's comfortable to publish.
+- **Hot takes market**: visitors submit takes, others vote agree/disagree, Polymarket-style odds display. Fake points only, never real money (UK gambling law). Needs backend + database, rate limiting, moderation. User-generated content brings UK Online Safety Act duties.
+- **"What your browser tells me" page**: show visitors everything the site can learn about them (rough IP location, device, browser, timezone, language, screen, referrer, fingerprint signals) as a lesson in web footprint. Mostly client-side; display only, store nothing (storing IPs makes it personal data under GDPR).
+- **Presence / live visitors**: who's on the site now, with coarse info only. Real-time (WebSockets/SSE). Natural precursor to a chat room.
+- **Chat room**: real-time, needs moderation.
+- **Live location** (friend's idea): city level and delayed only.
+- **AI features**: model calls bill whoever's API key is used (Patrick's). Keep keys server-side, rate-limit, set a spend cap; prefer build-time generation where possible. Unused Cognee hackathon credits could back "Ask my library" (knowledge graph + retrieval over books/reviews).
