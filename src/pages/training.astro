@@ -18,6 +18,7 @@ const metres = (total: ActivityTotal) => Math.round(total.elevation_gain).toLoca
 
 <BaseLayout title="Training" description="Running and riding totals from Strava.">
   <h1>Training</h1>
+  <p>Run fat boy.</p>
 
   {
     sports ? (
@@ -59,6 +60,10 @@ const metres = (total: ActivityTotal) => Math.round(total.elevation_gain).toLoca
 </BaseLayout>
 
 <style>
+  h1 {
+    margin-top: 0;
+  }
+
   section + section {
     margin-top: 2.5rem;
   }
