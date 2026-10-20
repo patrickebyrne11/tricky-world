@@ -84,6 +84,8 @@ Both admin RPCs authorize the protected `app_metadata.role` claim inside Postgre
 
 ## 5. Enable approval notification emails
 
+The `notify-pending-take` Edge Function, notification secrets, Vault secret and versioned database trigger were activated on 2026-10-20. The instructions below document how to reproduce or rotate the setup.
+
 Notifications follow an event-driven path:
 
 ```text
@@ -100,24 +102,17 @@ The webhook is asynchronous, so an email-provider outage does not roll back a va
    openssl rand -hex 32
    ```
 
-3. Save the values as Supabase Edge Function secrets and deploy the function without gateway JWT verification. The function authenticates the database webhook using `HOT_TAKES_WEBHOOK_SECRET` instead.
+3. Save the values as Supabase Edge Function secrets. The deployed function has gateway JWT verification disabled and authenticates the database webhook using `HOT_TAKES_WEBHOOK_SECRET` instead. Redeploy only when its code changes.
 
    ```sh
    npx supabase secrets set --env-file supabase/functions/.env
-   npx supabase functions deploy notify-pending-take --no-verify-jwt
    ```
 
-4. In Supabase **Database → Webhooks**, create `notify-pending-take`:
-
-   - Table: `public.takes`
-   - Event: `INSERT`
-   - Method: `POST`
-   - URL: `https://<project-ref>.supabase.co/functions/v1/notify-pending-take`
-   - HTTP header: `x-webhook-secret: <the same HOT_TAKES_WEBHOOK_SECRET>`
+4. Store the same webhook secret in Supabase Vault under the name `hot_takes_webhook_secret`, then apply `202610200001_add_pending_take_webhook.sql`. The migration enables `pg_net` and creates the asynchronous `public.takes` insert trigger without putting the secret in git. This is an operational secret step; do not add the value to a migration.
 
 Set `MODERATION_URL` to `https://patrickebyrne11.github.io/tricky-world/takes/admin/`; the notification email then opens the protected queue instead of Supabase Studio.
 
-The function validates the secret and payload, ignores approved seed rows, escapes user content in HTML, and uses the take UUID as Resend's idempotency key so a repeated webhook cannot create duplicate email. Resend's current free plan allows 3,000 messages per month and 100 per day—well above the submission cooldown's theoretical maximum.
+The function validates the secret and payload, ignores approved seed rows, escapes user content in HTML, and uses the take UUID as Resend's idempotency key so a repeated webhook cannot create duplicate email. Webhook responses are available in `net._http_response` for operational checks.
 
 ### Route Auth mail through Resend
 
@@ -146,5 +141,7 @@ Before sharing the board publicly, verify all of these with the publishable key 
 9. A moderator can list, approve and reject pending takes from `/takes/admin/`.
 10. A pending submission sends one approval email linking to the admin page; an approved seed insert sends none.
 11. A webhook call with the wrong `x-webhook-secret` returns `401` and sends no email.
+
+An automated production check on 2026-10-20 verified public reads, signed-out submission denial, guest submission, the ten-minute cooldown, vote replacement, guest moderation/queue denial, wrong-secret rejection, seed-row filtering, Resend idempotency and a real trigger response of HTTP 204. The labelled test data and temporary anonymous user were removed afterwards. Moderator Approve/Reject and visible inbox receipt still require Patrick's authenticated browser/email session.
 
 As checked on 2026-10-19, the free plan includes two active projects, 500 MB database size, 5 GB uncached egress, and 50,000 monthly active users. This prototype should be far below those limits. Supabase can [pause a free project after low activity over seven days](https://supabase.com/docs/guides/platform/free-project-pausing), so treat it as a prototype rather than an availability promise. Recheck [current billing quotas](https://supabase.com/docs/guides/platform/billing-on-supabase) before inviting users to depend on it.

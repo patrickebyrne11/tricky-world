@@ -19,7 +19,7 @@ Committed work is above the line, speculative ideas below it. Move items between
 ## In progress
 
 - **Strava training page** ([ADR-006](DECISIONS.md#adr-006-build-time-strava-totals)). Route and daily build refresh implemented. Add `STRAVA_SECRET_WRITE_TOKEN` (fine-grained token with Actions secrets write for this repo) to enable production snapshots; other Strava secrets are already configured.
-- **Finish Hot Takes operations** ([ADR-007](DECISIONS.md#adr-007-supabase-backend-for-hot-takes), [ADR-009](DECISIONS.md#adr-009-moderator-queue-and-resend-owned-email-delivery), [ADR-010](DECISIONS.md#adr-010-temporary-guest-access-for-friend-testing)). The project, migrations, Auth URLs, repository variables and core user flow are live. Activate Resend notifications/custom SMTP, verify the admin queue with Patrick's refreshed moderator JWT, test guest access with friends, then finish `docs/HOT_TAKES_SETUP.md`'s security checklist.
+- **Finish Hot Takes operations** ([ADR-007](DECISIONS.md#adr-007-supabase-backend-for-hot-takes), [ADR-009](DECISIONS.md#adr-009-moderator-queue-and-resend-owned-email-delivery), [ADR-010](DECISIONS.md#adr-010-temporary-guest-access-for-friend-testing), [ADR-011](DECISIONS.md#adr-011-versioned-webhook-trigger-with-a-vault-held-secret)). The core user flow and Resend notification path are live; automated guest/security checks and the production webhook pass. Confirm inbox receipt, verify Approve/Reject with Patrick's refreshed moderator JWT, test the UI with friends, and optionally configure custom Auth SMTP after verifying a sender domain.
 
 ## Next (Phase 1, committed)
 

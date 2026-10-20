@@ -187,3 +187,19 @@ Template:
 **Challenges:** Anonymous users share the `authenticated` Postgres role, so authorization must continue to depend on protected claims for moderator actions rather than the role alone.
 
 **What I'd do differently:** Configure custom SMTP before a concentrated test session, then use guest access only when its browser-level identity trade-off is intentional.
+
+---
+
+## 2026-10-20: Versioned asynchronous webhook with Vault
+
+**Technology / concept:** `pg_net`, Postgres trigger functions, Supabase Vault, environment-specific secret injection.
+
+**Why introduced:** Approval email needed a production database webhook, but the optional Dashboard webhook wrapper was not provisioned and a dashboard-only trigger would create untracked production state.
+
+**What I implemented:** A migration-owned insert trigger that reads its shared secret from Vault and queues the Edge Function call through `pg_net`. The secret remains outside git and notification failure cannot roll back the source take.
+
+**What I learned:** Infrastructure state and secret values have different lifecycles. The extension, trigger function and event binding belong in migrations; the credential belongs in an environment-specific secret store. This is similar to deploying a pipeline definition from git while injecting connection credentials from a secrets manager.
+
+**Challenges:** Supabase's documented `supabase_functions.http_request()` helper exists only after the Database Webhooks integration is enabled. Calling `pg_net` directly keeps the same asynchronous behavior without copying Supabase's internal wrapper schema.
+
+**What I'd do differently:** Check optional database integration provisioning before assuming a hosted helper schema exists.

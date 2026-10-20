@@ -1,6 +1,6 @@
 # Architecture
 
-*Last updated: 2026-10-19. Keep this accurate. Update it in the same change that alters the architecture.*
+*Last updated: 2026-10-20. Keep this accurate. Update it in the same change that alters the architecture.*
 
 ## Overview
 
@@ -84,7 +84,7 @@ Postgres remains the authorization boundary:
 - `(take_id, user_id)` is the vote primary key, so one active vote per person is a database invariant.
 - A trigger forces submissions to `pending`, assigns the authenticated user, trims input, and enforces a ten-minute cooldown.
 - `/takes/admin` calls `get_pending_takes()` and `moderate_take()`. Both check protected auth app metadata inside Postgres; hiding the link is convenience, not authorization. Supabase Studio remains an emergency fallback.
-- An asynchronous database webhook invokes the `notify-pending-take` Edge Function after inserts. Pending rows produce a Resend email linking to the admin queue; seed/system rows are ignored. A separate webhook secret authenticates the call, and provider credentials remain in Supabase project secrets.
+- A versioned `takes` insert trigger uses `pg_net` to invoke the deployed `notify-pending-take` Edge Function asynchronously. It reads the shared webhook secret from Supabase Vault; the receiver has the same value in Edge Function secrets. Pending rows produce a Resend email linking to the admin queue, while seed/system rows are ignored. Provider credentials remain in Supabase project secrets.
 - The initial approved take has a fixed UUID and is inserted by a production migration; `supabase/seed.sql` supplies the same row after local database resets.
 
 The page includes a static contribution explainer without JavaScript, but the live board cannot progressively render on GitHub Pages without browser JavaScript: there is no request-time server. Setup and verification steps are in [HOT_TAKES_SETUP.md](HOT_TAKES_SETUP.md).

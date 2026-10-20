@@ -299,3 +299,33 @@ Offer both **Join as guest** and email magic-link sign-in on the public board. G
 - A guest identity belongs to one browser profile. Clearing storage, changing browsers or using private browsing creates another user, so this mode is not a strong one-person-one-vote guarantee.
 - Supabase rate-limits anonymous creation by IP. Add CAPTCHA or disable guest access before opening the board beyond the friend test.
 - Email sign-in remains available for persistent identities and becomes the preferred public path after Resend SMTP is configured.
+
+---
+
+## ADR-011: Versioned webhook trigger with a Vault-held secret
+
+- **Status:** Accepted
+- **Date:** 2026-10-20
+- **Supersedes:** ADR-008's dashboard-only webhook configuration detail; its event-driven notification architecture remains accepted.
+
+### Context
+
+The Edge Function and Resend configuration are deployed, but this project's database has not provisioned Supabase's optional `supabase_functions.http_request()` dashboard wrapper. Creating the webhook only in the Dashboard would also leave production-only trigger state outside the migration history and store its shared-secret header inside the trigger definition.
+
+### Decision
+
+Enable the supported `pg_net` extension in a migration and attach a project-owned trigger function to `public.takes` inserts. The function builds the standard Supabase database-webhook payload, reads `hot_takes_webhook_secret` from Supabase Vault, and enqueues an asynchronous `net.http_post()` call to the Edge Function. Store the same value independently in Edge Function secrets for request authentication.
+
+The trigger catches queueing/configuration errors and emits a database warning so notification failure cannot roll back a valid submission.
+
+### Alternatives considered
+
+- **Enable and configure Database Webhooks in the Dashboard:** less SQL, but the relevant wrapper is not currently provisioned and the resulting trigger/configuration would be production-only state.
+- **Inline the secret in a migration or trigger argument:** simple but would expose a credential in git or database metadata.
+- **Call Resend directly from Postgres:** removes the Edge Function but couples provider-specific HTTP and email formatting to the database.
+
+### Consequences
+
+- The extension, function and trigger are reproducible through migrations; only the environment-specific Vault value remains an operational setup step.
+- The webhook secret exists in two appropriate server-side stores: Supabase Vault for the database sender and Edge Function secrets for the receiver.
+- `pg_net` remains asynchronous, but delivery is still best-effort. Responses are available in `net._http_response`; durable retries would require an outbox.
